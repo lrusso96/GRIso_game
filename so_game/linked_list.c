@@ -109,10 +109,30 @@ sem_destroy(&(head->sem));
 free(head);
 }
 
+/*
+ * appends an item to a List
+ */
 
+void List_append(ListHead* head, ListItem* item){
+    sem_wait(&(head->sem));
+    ListItem* last = head->last;
+    if(last){
+        last->next = item;
+        item->prev = last;
+    }
+    else{
+        head->first = item;
+    }
+    head->last = item;
+    head->size++;
+    sem_post(&(head->sem));
+}
+
+/*
+ * Prints all list items (for debug)
+ */
 void List_print(ListHead* head){
     sem_wait(&(head->sem));
-
     ListItem* aux=head->first;
     printf("list: ", aux);
     while(aux){
@@ -120,32 +140,5 @@ void List_print(ListHead* head){
     aux=aux->next;
   }
   sem_post(&(head->sem));
-
-
   printf("\n");
 }
-
-void List_append(ListHead* head, ListItem* item){
-
-    sem_wait(&(head->sem));
-
-    ListItem* last = head->last;
-    if(last){
-        last->next = item;
-        item->prev = last;
-
-    }
-    else{
-        head->first = item;
-    }
-
-    head->last = item;
-    head->size++;
-    sem_post(&(head->sem));
-}
-
-
-
-
-
-
