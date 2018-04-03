@@ -5,6 +5,7 @@
 #include <math.h>
 #include <netinet/in.h>
 #include <signal.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -31,8 +32,7 @@ Vehicle* vehicle; // The vehicle
 
 int socket_desc;
 
-//todo can convert to bool? (stdbool.h)
-int running = 0;
+bool running = false;
 
 //--------------------------------------->
 
