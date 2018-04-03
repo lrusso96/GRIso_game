@@ -11,10 +11,75 @@
 #include "vehicle.h"
 #include "world_viewer.h"
 
+/*
+ * global variables
+ */
+
 int window;
 World world;
 Vehicle* vehicle; // The vehicle
 
+int socket_desc;
+
+//todo can convert to bool? (stdbool.h)
+int connectivity = 0;
+
+//--------------------------------------->
+
+/*
+ * TCP functions
+ */
+
+int getIdFromServer(){
+  return 0;
+}
+
+Image* getMapElevationFromServer(){
+  return NULL;
+}
+
+Image* getMapTextureFromServer(){
+  return NULL;
+}
+
+Image* getMyTextureFromServer(Image* my_texture_for_server, int id){
+  return NULL;
+}
+
+//--------------------------------------->
+
+/*
+ * UDP threads routines
+ */
+
+void* UDPSender(void* args){
+  return NULL;
+}
+
+void* UDPReceiver(void* args){
+  return NULL;
+}
+
+//--------------------------------------->
+
+/*
+ * Signal Handling
+ */
+ void signalHandler(int signal){
+   switch (signal) {
+     case SIGHUP:
+       break;
+     case SIGINT:
+       connectivity=0;
+       WorldViewer_exit(0);
+       break;
+     default:
+        fprintf(stderr, "Uncaught signal: %d\n", signal);
+        return;
+     }
+ }
+
+//--------------------------------------->
 
 int main(int argc, char **argv) {
   if (argc<3) {
@@ -30,7 +95,9 @@ int main(int argc, char **argv) {
     printf("Fail! \n");
   }
 
-  Image* my_texture_for_server= NULL;
+  //fixme is this needed?
+  Image* my_texture_for_server= my_texture;
+
   // todo: connect to the server
   //   -get ad id
   //   -send your texture to the server (so that all can see you)
@@ -38,10 +105,10 @@ int main(int argc, char **argv) {
   //   -get the texture of the surface
 
   // these come from the server
-  int my_id = NULL;
-  Image* map_elevation= NULL;
-  Image* map_texture= NULL;
-  Image* my_texture_from_server= my_texture_for_server; //to skip unused variable warning...
+  int my_id = getIdFromServer();
+  Image* map_elevation= getMapElevationFromServer();
+  Image* map_texture= getMapTextureFromServer();
+  Image* my_texture_from_server= getMyTextureFromServer(my_texture_for_server, my_id);
 
   // construct the world
   World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
