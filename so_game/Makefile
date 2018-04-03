@@ -12,6 +12,7 @@ BINS=libso_game.a\
      so_game_server\
 
 OBJS = vec3.o\
+       client_list.o\
        linked_list.o\
        logger.o\
        surface.o\
@@ -24,6 +25,7 @@ OBJS = vec3.o\
 HEADERS=utils.h\
 	logger.h\
 	image.h\
+	client_list.h\
 	linked_list.h\
 	so_game_protocol.h\
 	surface.h\
