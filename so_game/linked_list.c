@@ -1,6 +1,8 @@
 #include "linked_list.h"
 #include <assert.h>
 #include <stdlib.h>
+#include <stdio.h>
+
 
 void List_init(ListHead* head) {
   head->first=0;
@@ -134,7 +136,7 @@ void List_append(ListHead* head, ListItem* item){
 void List_print(ListHead* head){
     sem_wait(&(head->sem));
     ListItem* aux=head->first;
-    printf("list: ", aux);
+    printf("list: ");
     while(aux){
     printf("%p ", aux);
     aux=aux->next;

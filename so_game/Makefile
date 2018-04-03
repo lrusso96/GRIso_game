@@ -13,6 +13,7 @@ BINS=libso_game.a\
 
 OBJS = vec3.o\
        linked_list.o\
+       logger.o\
        surface.o\
        image.o\
        vehicle.o\
@@ -20,8 +21,8 @@ OBJS = vec3.o\
        world_viewer.o\
        so_game_protocol.o\
 
-HEADERS=helpers.h\
-	common.h\
+HEADERS=utils.h\
+	logger.h\
 	image.h\
 	linked_list.h\
 	so_game_protocol.h\
