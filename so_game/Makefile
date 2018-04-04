@@ -8,6 +8,7 @@ BINS=libso_game.a\
      so_game\
      test_packets_serialization\
      test_linked_list\
+     test_local_world\
      so_game_client\
      so_game_server\
 
@@ -42,25 +43,28 @@ HEADERS=utils.h\
 .phony: clean all
 
 
-all:	$(BINS) 
+all:	$(BINS)
 
-libso_game.a: $(OBJS) 
+libso_game.a: $(OBJS)
 	$(AR) -rcs $@ $^
 	$(RM) $(OBJS)
 
-so_game: so_game.c libso_game.a 
+so_game: so_game.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)
 
-test_packets_serialization: test_packets_serialization.c libso_game.a  
+test_packets_serialization: test_packets_serialization.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^  $(LIBS)
 
-test_linked_list: test_linked_list.c libso_game.a  
+test_linked_list: test_linked_list.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^  $(LIBS)
 
-so_game_client: so_game_client.c libso_game.a 
+test_local_world: test_local_world.c libso_game.a
+	$(CC) $(CCOPTS) -Ofast -o $@ $^  $(LIBS)
+
+so_game_client: so_game_client.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)
 
-so_game_server: so_game_server.c libso_game.a 
+so_game_server: so_game_server.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)
 
 clean:

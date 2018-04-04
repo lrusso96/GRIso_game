@@ -19,4 +19,9 @@ LocalWorld* LocalWorld_init(void);
 void LocalWorld_destroy(LocalWorld* lw, World* w);
 void LocalWorld_resize(LocalWorld* lw);
 
-int LocalWorld_addVehicle(LocalWorld* lw, Vehicle* v, int id);
+int LocalWorld_addVehicle(LocalWorld* lw, Vehicle* v);
+void LocalWorld_detachVehicle(LocalWorld* lw, World* w, int id);
+
+
+//debug
+void LocalWorld_print(LocalWorld* lw);

@@ -4,8 +4,18 @@
 void logger_print(const char* who, const char *fmt, ...){
     va_list args;
     va_start(args, fmt);
-    printf("\n[%s]  ", who);
-    vprintf(fmt, args);
+    fprintf(stdout, "\n[%s]  ", who);
+    fprintf(stdout, fmt, args);
     va_end(args);
-    putchar((int) '\n');
+    fprintf(stdout, "\n");
 }
+
+void logger_error(const char* who, const char *fmt, ...){
+    va_list args;
+    va_start(args, fmt);
+    fprintf(stderr, "\n[%s]  ", who);
+    fprintf(stderr, fmt, args);
+    va_end(args);
+    fprintf(stderr, "\n");
+}
+

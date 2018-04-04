@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "image.h"
@@ -33,7 +34,7 @@ void LocalWorld_resize(LocalWorld* lw){
 
 void LocalWorld_destroy(LocalWorld* lw, World* w){
     int size = lw->size;
-    for(int i=1;i<size;i++){
+    for(int i=0;i<size;i++){
         if(lw->available_ids[i])
             continue;
 
@@ -60,7 +61,9 @@ int getFirstAvailableId(LocalWorld* lw){
 }
 
 
-int LocalWorld_addVehicle(LocalWorld* lw, Vehicle* v, int id){
+int LocalWorld_addVehicle(LocalWorld* lw, Vehicle* v){
+    int id = v->id;
+    printf("%d id\n", id);
     int pos = getFirstAvailableId(lw);
     if(pos<0){
         pos = lw->size;
@@ -72,6 +75,50 @@ int LocalWorld_addVehicle(LocalWorld* lw, Vehicle* v, int id){
     lw->online_users++;
     return pos;
 }
+
+void LocalWorld_detachVehicle(LocalWorld* lw, World* w, int id){
+    int size = lw->size;
+    for(int i=0;i<size;i++){
+        if(!lw->available_ids[i] && lw->ids[i] == id){
+            Image* im = lw->vehicles[i]->texture;
+            World_detachVehicle(w,lw->vehicles[i]);
+            if(im)
+                Image_free(im);
+            Vehicle_destroy(lw->vehicles[i]);
+            free(lw->vehicles[i]);
+
+            lw->available_ids[i] = true;
+            lw->online_users--;
+            break;
+        }
+    }
+}
+
+void LocalWorld_print(LocalWorld* lw){
+    printf("--- Local world of size %d---\n\n", lw->size);
+    int left = lw->online_users;
+    printf("%d online users\n", left);
+
+    int i = 0;
+    while(left){
+        if(!lw->available_ids[i]){
+            printf("\n\tuser %d", lw->ids[i]);
+            left--;
+        }
+        i++;
+    }
+
+    printf("\n\n");
+
+
+}
+
+
+
+
+
+
+
 
 
 
