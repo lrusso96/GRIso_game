@@ -19,6 +19,7 @@ OBJS = vec3.o\
        image.o\
        vehicle.o\
        world.o\
+       local_world.o\
        world_viewer.o\
        so_game_protocol.o\
 
@@ -32,6 +33,7 @@ HEADERS=utils.h\
 	vec3.h\
 	vehicle.h\
 	world.h\
+        local_world.h\
 	world_viewer.h\
 
 %.o:	%.c $(HEADERS)

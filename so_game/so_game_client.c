@@ -4,6 +4,7 @@
 #include <GL/glut.h>
 #include <math.h>
 #include <netinet/in.h>
+#include <pthread.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -13,7 +14,7 @@
 
 #include "image.h"
 #include "logger.h"
-#include "so_game_client.h"
+#include "local_world.h"
 #include "so_game_protocol.h"
 #include "surface.h"
 #include "utils.h"
@@ -31,6 +32,9 @@ World world;
 Vehicle* vehicle; // The vehicle
 
 int socket_desc;
+int socket_udp;
+struct sockaddr_in udp_server;
+LocalWorld* lw;
 
 bool running = false;
 
@@ -45,7 +49,7 @@ bool running = false;
  * Create TCP connection
  * the return value is assigned to socket_desc global variable
  */
-void createConnection(void){
+void createTCPConnection(void){
     int ret;
     struct sockaddr_in server_addr = {0};
 
@@ -237,8 +241,28 @@ Image* getMapTextureFromServer(void){
 /*
  * post my vehicle texture to server
  */
-void postVehicleTexture(Image* texture, int id){
-    return;
+int postVehicleTexture(Image* texture, int id){
+    char buf_send[BUFFER_SIZE];
+    ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
+    PacketHeader ph;
+    ph.type=PostTexture;
+    request->header=ph;
+    request->id=id;
+    request->image=texture;
+
+    int size=Packet_serialize(buf_send,&(request->header));
+    if(size==-1) return -1;
+    int bytes_sent=0;
+    int ret=0;
+    while(bytes_sent<size){
+        ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
+        if (ret==-1 && errno==EINTR) continue;
+        ERROR_HELPER(ret,"Can't send my vehicle texture");
+        if (ret==0) break;
+        bytes_sent+=ret;
+    }
+    logger_print(__func__, "Sent %d bytes",bytes_sent);
+    return 0;
 }
 
 /*
@@ -246,7 +270,51 @@ void postVehicleTexture(Image* texture, int id){
  * @return the texture
  */
 Image* getVehicleTexture(int id){
-    return NULL;
+    char buf_send[BUFFER_SIZE];
+    char buf_rcv[BUFFER_SIZE];
+    ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
+    PacketHeader ph;
+    ph.type=GetTexture;
+    request->header=ph;
+    request->id=id;
+    int size=Packet_serialize(buf_send,&(request->header));
+    if(size==-1) return NULL;
+    int bytes_sent=0;
+    int ret=0;
+    while(bytes_sent<size){
+        ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
+        if (ret==-1 && errno==EINTR) continue;
+        ERROR_HELPER(ret,"Can't request a texture of a vehicle");
+        if (ret==0) break;
+        bytes_sent+=ret;
+    }
+    Packet_free(&(request->header));
+
+    int ph_len=sizeof(PacketHeader);
+    int msg_len=0;
+    while(msg_len<ph_len){
+        ret=recv(socket_desc, buf_rcv+msg_len, ph_len-msg_len, 0);
+        if (ret==-1 && errno == EINTR) continue;
+        ERROR_HELPER(msg_len, "Cannot read from socket");
+        msg_len+=ret;
+        }
+    PacketHeader* header=(PacketHeader*)buf_rcv;
+    size=header->size-ph_len;
+
+    msg_len=0;
+    while(msg_len<size){
+        ret=recv(socket_desc, buf_rcv+msg_len+ph_len, size-msg_len, 0);
+        if (ret==-1 && errno == EINTR) continue;
+        ERROR_HELPER(msg_len, "Cannot read from socket");
+        msg_len+=ret;
+        }
+
+    ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
+	logger_print(__func__, "Received %d bytes",msg_len+ph_len);
+    Image* im=deserialized_packet->image;
+
+    free(deserialized_packet);
+    return im;
 }
 
 /*
@@ -257,17 +325,46 @@ void postQuitPacket(int id){
 }
 
 
-//--------------------------------------->
+//------------- UDP stuff -------------------------->
+
 
 /*
- * UDP threads routines
+ * Create UDP connection
+ * the "return value" is assigned to socket_udp global variable
+ * side effect on udp_server field too
  */
+void createUDPConnection(void){
+    uint16_t udp_port_number = htons((uint16_t)SERVER_UDP_PORT); // we use network byte order
+	socket_udp = socket(AF_INET, SOCK_DGRAM, 0);
+    ERROR_HELPER(socket_udp, "Can't create an UDP socket");
+    //to handle global variable initialization
+    struct sockaddr_in alias = {0};
+	udp_server = alias; // some fields are required to be filled with 0
+    udp_server.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
+    udp_server.sin_family = AF_INET;
+    udp_server.sin_port = udp_port_number;
+    logger_print(__func__, "UDP socket successfully created");
+}
 
+/*
+ * This thread sends only vehicleUpdatePackets to server
+ * until running is true (set it to false to stop it)
+ */
 void* UDPSenderThread(void* args){
+    while(running){
+        sleep(1);
+    }
     return NULL;
 }
 
+/*
+ * This thread receives only vehicleUpdatePackets from server
+ * until running is true (set it to false to stop it)
+ */
 void* UDPReceiverThread(void* args){
+    while(running){
+        sleep(1);
+    }
     return NULL;
 }
 
@@ -307,19 +404,21 @@ int main(int argc, char **argv) {
 
 
 
-    //seting signal handlers
+    //setting signal handler
     struct sigaction sa;
     sa.sa_handler = signalHandler;
     // Restart the system call
     sa.sa_flags = SA_RESTART;
     // Block every signal during the handler
     sigfillset(&sa.sa_mask);
-    int ret=sigaction(SIGHUP, &sa, NULL);
+    int ret = sigaction(SIGHUP, &sa, NULL);
     ERROR_HELPER(ret,"Cannot handle SIGHUP");
-
     ret=sigaction(SIGINT, &sa, NULL);
     ERROR_HELPER(ret,"Cannot handle SIGINT");
 
+
+    //setting up localWorld
+    lw = LocalWorld_init();
 
 
     //fixme is this needed?
@@ -336,13 +435,14 @@ int main(int argc, char **argv) {
 
 
     //let's create a TCP socket
-    createConnection();
+    createTCPConnection();
 
     //and here we get from server all needed stuff to play
     int my_id = getIdFromServer();
     Image* map_elevation= getMapElevationFromServer();
     Image* map_texture= getMapTextureFromServer();
-    postVehicleTexture(my_texture_for_server, my_id);
+    ret = postVehicleTexture(my_texture_for_server, my_id);
+    ERROR_HELPER(ret,"Cannot post my vehicle");
     Image* my_texture_from_server= getVehicleTexture(my_id);
 
     // construct the world
@@ -360,31 +460,57 @@ int main(int argc, char **argv) {
     /*FILLME*/
 
 
-
-
     //FILLME init UDP
-
+    createUDPConnection();
 
     //FILLME spawn both UDP sender/receiver threads.
+    pthread_t UDP_sender,UDP_receiver;
+
+
+    ret = pthread_create(&UDP_sender, NULL, UDPSenderThread, NULL);
+    PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_sender");
+    ret = pthread_create(&UDP_receiver, NULL, UDPReceiverThread, NULL);
+    PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_receiver");
 
 
     //here we can run the world and finally play
     WorldViewer_runGlobal(&world, vehicle, &argc, argv);
 
 
-
     //FILLME join the threads (running = false;)
 
+    logger_print(__func__, "Joining UDP threads");
+    running = false;
 
-    //FILLME close connection (and post quitPacket)
+
+    ret = pthread_join(UDP_sender,NULL);
+    PTHREAD_ERROR_HELPER(ret, "pthread_join on UDP_sender failed");
+    ret=pthread_join(UDP_receiver,NULL);
+    PTHREAD_ERROR_HELPER(ret, "pthread_join on UDP_receiver failed");
+
+
+    //FILLME post quitPacket to Server
+
+    //close both sockets
+    ret=close(socket_desc);
+    ERROR_HELPER(ret,"Something went wrong closing TCP socket");
+    ret=close(socket_udp);
+    ERROR_HELPER(ret,"Something went wrong closing UDP socket");
 
 
     //FILLME clean other stuff
 
+    //destroy local copy of the world
 
-    // cleanup
+    LocalWorld_destroy(lw, &world);
+
+
+    // final cleanup
     World_destroy(&world);
 
+    Image_free(map_elevation);
+    Image_free(map_texture);
+    Image_free(my_texture);
 
     return 0;
 }

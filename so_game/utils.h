@@ -1,6 +1,8 @@
 #define SERVER_ADDRESS  "127.0.0.1"
+//fixme call me server_tcp_port
 #define SERVER_PORT 2018
 #define BUFFER_SIZE 500000
+#define SERVER_UDP_PORT 3001
 
 #define GENERIC_ERROR_HELPER(cond, errCode, msg) do {               \
         if (cond) {                                                 \
@@ -10,3 +12,5 @@
     } while(0)
 
 #define ERROR_HELPER(ret, msg)      GENERIC_ERROR_HELPER((ret < 0), errno, msg)
+
+#define PTHREAD_ERROR_HELPER(ret, msg)  GENERIC_ERROR_HELPER((ret != 0), ret, msg)
