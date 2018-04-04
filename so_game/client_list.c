@@ -1,4 +1,7 @@
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "client_list.h"
 
 void ClientList_init(ClientListHead* head) {
@@ -73,11 +76,20 @@ ClientListItem* ClientList_detach(ClientListHead* head, ClientListItem* item) {
 }
 
 void ClientList_destroy(ClientListHead* head){
-    return;
+    //assert empty list
+    free(head);
 }
 
 void ClientList_print(ClientListHead* head){
-    return;
+    ClientListItem* aux=head->first;
+    printf("list:\n\n");
+    while(aux){
+        printf("item with id: %d\n", aux->id);
+        aux=aux->next;
+    }
+    printf("\n");
 }
+
+
 
 
