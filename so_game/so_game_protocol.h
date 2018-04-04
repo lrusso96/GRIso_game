@@ -9,7 +9,8 @@ typedef enum {
   PostTexture=0x4,
   PostElevation=0x5,
   WorldUpdate=0x6,
-  VehicleUpdate=0x7
+  VehicleUpdate=0x7,
+  Quit=0x8              //use this in IDPacket
 } Type;
 
 typedef struct {
@@ -26,6 +27,7 @@ typedef struct {
 
 // sent from client to server to ask for an id (id=-1)
 // sent from server to client to assign an id
+// sent from client to server to quit (type = Quit)
 typedef struct {
   PacketHeader header;
   int id;

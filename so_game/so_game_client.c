@@ -234,9 +234,28 @@ Image* getMapTextureFromServer(void){
 
 }
 
-Image* getMyTextureFromServer(Image* my_texture_for_server, int id){
-  return NULL;
+/*
+ * post my vehicle texture to server
+ */
+void postVehicleTexture(Image* texture, int id){
+    return;
 }
+
+/*
+ * get vehicle texture of user "id" from server
+ * @return the texture
+ */
+Image* getVehicleTexture(int id){
+    return NULL;
+}
+
+/*
+ * notify server that the client "id" is quitting
+ */
+void postQuitPacket(int id){
+    return;
+}
+
 
 //--------------------------------------->
 
@@ -273,57 +292,99 @@ void signalHandler(int signal){
 //--------------------------------------->
 
 int main(int argc, char **argv) {
-  if (argc<2) {
-    printf("usage: %s <player texture>\n", argv[1]);
-    exit(-1);
-  }
+    if (argc<2) {
+        printf("usage: %s <player texture>\n", argv[1]);
+        exit(-1);
+    }
 
-  printf("loading texture image from %s ... ", argv[2]);
-  Image* my_texture = Image_load(argv[2]);
-  if (my_texture) {
-    printf("Done! \n");
-  } else {
-    printf("Fail! \n");
-  }
+    printf("loading texture image from %s ... ", argv[2]);
+    Image* my_texture = Image_load(argv[2]);
+    if (my_texture) {
+        printf("Done! \n");
+    } else {
+        printf("Fail! \n");
+    }
 
-  //fixme is this needed?
-  Image* my_texture_for_server= my_texture;
 
-  // todo: connect to the server
-  //   -get ad id
-  //   -send your texture to the server (so that all can see you)
-  //   -get an elevation map
-  //   -get the texture of the surface
 
-  // these come from the server
-  int my_id = getIdFromServer();
-  Image* map_elevation= getMapElevationFromServer();
-  Image* map_texture= getMapTextureFromServer();
-  Image* my_texture_from_server= getMyTextureFromServer(my_texture_for_server, my_id);
+    //seting signal handlers
+    struct sigaction sa;
+    sa.sa_handler = signalHandler;
+    // Restart the system call
+    sa.sa_flags = SA_RESTART;
+    // Block every signal during the handler
+    sigfillset(&sa.sa_mask);
+    int ret=sigaction(SIGHUP, &sa, NULL);
+    ERROR_HELPER(ret,"Cannot handle SIGHUP");
 
-  // construct the world
-  World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
-  vehicle=(Vehicle*) malloc(sizeof(Vehicle));
-  Vehicle_init(vehicle, &world, my_id, my_texture_from_server);
-  World_addVehicle(&world, vehicle);
+    ret=sigaction(SIGINT, &sa, NULL);
+    ERROR_HELPER(ret,"Cannot handle SIGINT");
 
-  // spawn a thread that will listen the update messages from
-  // the server, and sends back the controls
-  // the update for yourself are written in the desired_*_force
-  // fields of the vehicle variable
-  // when the server notifies a new player has joined the game
-  // request the texture and add the player to the pool
-  /*FILLME*/
+
+
+    //fixme is this needed?
+    Image* my_texture_for_server= my_texture;
+
+    // todo: connect to the server
+    //   -get ad id
+    //   -send your texture to the server (so that all can see you)
+    //   -get an elevation map
+    //   -get the texture of the surface
+
+    // these come from the server
+
+
+
+    //let's create a TCP socket
+    createConnection();
+
+    //and here we get from server all needed stuff to play
+    int my_id = getIdFromServer();
+    Image* map_elevation= getMapElevationFromServer();
+    Image* map_texture= getMapTextureFromServer();
+    postVehicleTexture(my_texture_for_server, my_id);
+    Image* my_texture_from_server= getVehicleTexture(my_id);
+
+    // construct the world
+    World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
+    vehicle=(Vehicle*) malloc(sizeof(Vehicle));
+    Vehicle_init(vehicle, &world, my_id, my_texture_from_server);
+    World_addVehicle(&world, vehicle);
+
+    // spawn a thread that will listen the update messages from
+    // the server, and sends back the controls
+    // the update for yourself are written in the desired_*_force
+    // fields of the vehicle variable
+    // when the server notifies a new player has joined the game
+    // request the texture and add the player to the pool
+    /*FILLME*/
+
+
+
+
+    //FILLME init UDP
 
 
     //FILLME spawn both UDP sender/receiver threads.
 
 
-  WorldViewer_runGlobal(&world, vehicle, &argc, argv);
+    //here we can run the world and finally play
+    WorldViewer_runGlobal(&world, vehicle, &argc, argv);
 
-    //FILLME join the threads
+
+
+    //FILLME join the threads (running = false;)
+
+
+    //FILLME close connection (and post quitPacket)
+
+
+    //FILLME clean other stuff
+
 
     // cleanup
     World_destroy(&world);
+
+
     return 0;
 }
