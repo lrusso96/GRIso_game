@@ -14,12 +14,11 @@
 
 #include "image.h"
 #include "logger.h"
-#include "local_world.h"
 #include "so_game_protocol.h"
 #include "surface.h"
 #include "utils.h"
 #include "vehicle.h"
-#include "world.h"
+#include "world_extended.h"
 #include "world_viewer.h"
 
 
@@ -28,13 +27,13 @@
  */
 
 int window;
-World world;
 Vehicle* vehicle; // The vehicle
 
 int socket_desc;
 int socket_udp;
 struct sockaddr_in udp_server;
-LocalWorld* lw;
+//wrapper of World
+WorldExtended* we;
 
 bool running = false;
 
@@ -318,10 +317,28 @@ Image* getVehicleTexture(int id){
 }
 
 /*
- * notify server that the client "id" is quitting
+ * notify server that the client "id" (me!) is quitting
  */
-void postQuitPacket(int id){
-    return;
+int postQuitPacket(int id){
+    char buf_send[BUFFER_SIZE];
+    IdPacket* idpckt=(IdPacket*)malloc(sizeof(IdPacket));
+    PacketHeader ph;
+    ph.type=Quit;
+    idpckt->id=id;
+    idpckt->header=ph;
+    int size=Packet_serialize(buf_send,&(idpckt->header));
+    logger_print(__func__, "Sending quit packet of %d bytes",size);
+    int msg_len=0;
+    while(msg_len<size){
+        int ret=send(socket_desc,buf_send+msg_len,size-msg_len,0);
+        if (ret==-1 && errno==EINTR) continue;
+        ERROR_HELPER(ret,"Can't send quit packet");
+        if (ret==0) break;
+        msg_len+=ret;
+    }
+    logger_print(__func__, "Quit packet was successfully sent");
+    return 0;
+
 }
 
 
@@ -417,8 +434,7 @@ int main(int argc, char **argv) {
     ERROR_HELPER(ret,"Cannot handle SIGINT");
 
 
-    //setting up localWorld
-    lw = LocalWorld_init();
+
 
 
     //fixme is this needed?
@@ -446,10 +462,14 @@ int main(int argc, char **argv) {
     Image* my_texture_from_server= getVehicleTexture(my_id);
 
     // construct the world
-    World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
+    //not needed anymore World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
+
+    we = WorldExtended_init(map_elevation, map_texture, 0.5, 0.5, 0.5);
+
+
     vehicle=(Vehicle*) malloc(sizeof(Vehicle));
-    Vehicle_init(vehicle, &world, my_id, my_texture_from_server);
-    World_addVehicle(&world, vehicle);
+    Vehicle_init(vehicle, we->w, my_id, my_texture_from_server);
+    WorldExtended_addVehicle(we, vehicle);
 
     // spawn a thread that will listen the update messages from
     // the server, and sends back the controls
@@ -474,7 +494,7 @@ int main(int argc, char **argv) {
 
 
     //here we can run the world and finally play
-    WorldViewer_runGlobal(&world, vehicle, &argc, argv);
+    WorldViewer_runGlobal(we->w, vehicle, &argc, argv);
 
 
     //FILLME join the threads (running = false;)
@@ -490,6 +510,7 @@ int main(int argc, char **argv) {
 
 
     //FILLME post quitPacket to Server
+    postQuitPacket(my_id);
 
     //close both sockets
     ret=close(socket_desc);
@@ -500,13 +521,12 @@ int main(int argc, char **argv) {
 
     //FILLME clean other stuff
 
-    //destroy local copy of the world
-
-    LocalWorld_destroy(lw, &world);
 
 
     // final cleanup
-    World_destroy(&world);
+    //destroy World
+    WorldExtended_destroy(we);
+    //not needed anymore World_destroy(&world);
 
     Image_free(map_elevation);
     Image_free(map_texture);
