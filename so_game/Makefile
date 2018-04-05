@@ -9,6 +9,7 @@ BINS=libso_game.a\
      test_packets_serialization\
      test_linked_list\
      test_world_extended\
+     test_world_server\
      so_game_client\
      so_game_server\
 
@@ -21,6 +22,7 @@ OBJS = vec3.o\
        vehicle.o\
        world.o\
        world_extended.o\
+       world_server.o\
        world_viewer.o\
        so_game_protocol.o\
 
@@ -35,6 +37,7 @@ HEADERS=utils.h\
 	vehicle.h\
 	world.h\
 	world_extended.h\
+	world_server.h\
 	world_viewer.h\
 
 %.o:	%.c $(HEADERS)
@@ -61,6 +64,10 @@ test_linked_list: test_linked_list.c libso_game.a
 
 test_world_extended: test_world_extended.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^  $(LIBS)
+
+test_world_server: test_world_server.c libso_game.a
+	$(CC) $(CCOPTS) -Ofast -o $@ $^  $(LIBS)
+
 
 so_game_client: so_game_client.c libso_game.a
 	$(CC) $(CCOPTS) -Ofast -o $@ $^ $(LIBS)

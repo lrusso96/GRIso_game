@@ -40,7 +40,7 @@ void WorldExtended_destroy(WorldExtended* we){
 
 int WorldExtended_addVehicle(WorldExtended* we, Vehicle* v){
     World_addVehicle(we->w, v);
-    int s = we->online_users = we->w->vehicles.size;
+    int s = we->w->vehicles.size;
     we->online_users = s;
     return s;
 }

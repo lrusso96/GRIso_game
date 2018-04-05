@@ -77,6 +77,7 @@ ListItem* List_insert(ListHead* head, ListItem* prev, ListItem* item) {
 
 ListItem* List_detach(ListHead* head, ListItem* item) {
 
+
 #ifdef _LIST_DEBUG_
   // we check that the element is in the list
   ListItem* instance=List_find(head, item);
@@ -84,6 +85,7 @@ ListItem* List_detach(ListHead* head, ListItem* item) {
 #endif
 
     sem_wait(&(head->sem));
+
 
   ListItem* prev=item->prev;
   ListItem* next=item->next;
@@ -93,13 +95,22 @@ ListItem* List_detach(ListHead* head, ListItem* item) {
   if(next){
     next->prev=prev;
   }
-  if (item==head->first)
+
+  if (item==head->first){
     head->first=next;
-  if (item==head->last)
+}
+
+  if (item==head->last){
     head->last=prev;
+
+}
+
   head->size--;
+
   item->next=item->prev=0;
+
   sem_post(&(head->sem));
+
   return item;
 }
 
