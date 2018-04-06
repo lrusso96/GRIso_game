@@ -1,7 +1,9 @@
+#include <semaphore.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "image.h"
+#include "utils.h"
 #include "world.h"
 #include "world_extended.h"
 
@@ -67,3 +69,74 @@ void WorldExtended_print(WorldExtended* we){
         item=item->next;
   }
 }
+
+
+void WorldExtended_getVehicleForcesUpdate(WorldExtended* we, Vehicle* v, float* tf, float* rf){
+
+    int ret;
+    ListHead* lh = &(we->w->vehicles);
+    //we need to do this in critical section!
+    ret = sem_wait(&(lh->sem));
+    ERROR_HELPER(ret, "sem_wait failed");
+
+    ListItem* item = lh->first;
+    while(item){
+        Vehicle* vv = (Vehicle*)item;
+
+        if(vv==v){
+            *tf=v->translational_force_update;
+            *rf=v->rotational_force_update;
+            ret = sem_post(&(lh->sem));
+            ERROR_HELPER(ret, "sem_post failed");
+            return;
+        }
+        item=item->next;
+    }
+    ret = sem_post(&(lh->sem));
+    ERROR_HELPER(ret, "sem_post failed");
+}
+
+void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float* y, float* t){
+
+    int ret;
+    ListHead* lh = &(we->w->vehicles);
+
+    //we need to do this in critical section!
+    ret = sem_wait(&(lh->sem));
+    ERROR_HELPER(ret, "sem_wait failed");
+
+    ListItem* item = lh->first;
+    while(item){
+        Vehicle* vv = (Vehicle*)item;
+
+        if(vv==v){
+            *x=v->x;
+            *y=v->y;
+            *t=v->theta;
+            ret = sem_post(&(lh->sem));
+            ERROR_HELPER(ret, "sem_post failed");
+            return;
+        }
+        item=item->next;
+    }
+    ret = sem_post(&(lh->sem));
+    ERROR_HELPER(ret, "sem_post failed");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

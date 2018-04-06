@@ -30,4 +30,15 @@ int WorldExtended_detachVehicle(WorldExtended* we, int id);
 
 
 //debug
-void WorldExtended_print(WorldExtended* w);
+void WorldExtended_print(WorldExtended* we);
+
+
+//getForces
+void WorldExtended_getVehicleForcesUpdate(WorldExtended* we, Vehicle* v, float* tf, float* rf);
+
+//todo setForces (it's not needed if the work is done server side)
+
+//getXYT (not needed if the work is done server side)
+void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float* y, float* t);
+
+//todo setXYT

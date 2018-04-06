@@ -7,6 +7,13 @@
 #include "world.h"
 
 
+/*
+ * This module is a wrapper of @World
+ * It manages a @linked_list of network infos of the clients.
+ *
+ * This was made to not modify World.h module (provided by Grisetti)
+ *
+ */
 
 typedef struct ClientItem {
     struct sockaddr_in user_addr;
@@ -35,3 +42,10 @@ void WorldServer_destroy(WorldServer* ws);
 
 //debug
 void WorldServer_print(WorldServer* ws);
+
+
+//todo getXYT for all clients
+
+//todo setForces for clients
+
+

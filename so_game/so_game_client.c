@@ -65,7 +65,7 @@ void createTCPConnection(void){
     ret = connect(socket_desc, (struct sockaddr*) &server_addr, sizeof(struct sockaddr_in));
     ERROR_HELPER(ret, "Could not connect to the server.\n");
 
-    logger_print(__func__, "Connection established..\n");
+    logger_verbose(__func__, "Connection established..\n");
 }
 
 
@@ -85,10 +85,10 @@ int getIdFromServer(void){
     IdPacket* id_packet = (IdPacket*)malloc(sizeof(IdPacket));
     id_packet->header = id_header;
     id_packet->id = -1;  //id = -1 to ask an id
-    logger_print(__func__, "id_packet with :\n type\t%d\n size\t%d\n id\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
+    logger_verbose(__func__, "id_packet with :\n type\t%d\n size\t%d\n id\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
 
     int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
-    logger_print(__func__, "Bytes to send : %d", bytes_to_send);
+    logger_verbose(__func__, "Bytes to send : %d", bytes_to_send);
 
     while(1){
     ret = send(socket_desc, id_packet_buffer, bytes_to_send, 0);
@@ -99,7 +99,7 @@ int getIdFromServer(void){
       }
       break;
     }
-    logger_print(__func__, "Bytes sent : %d", ret);
+    logger_verbose(__func__, "Bytes sent : %d", ret);
 
     //Free the id_packet
     Packet_free(&id_packet->header);
@@ -114,11 +114,11 @@ int getIdFromServer(void){
     }
     break;
     }
-    logger_print(__func__, "Bytes received : %zu", msg_len);
+    logger_verbose(__func__, "Bytes received : %zu", msg_len);
 
     IdPacket* id_packet_deserialized = (IdPacket*)Packet_deserialize(id_packet_buffer, msg_len);
     int my_id = id_packet_deserialized->id;
-    logger_print(__func__, "id_packet with : \n type\t%d\n size\t%d\n id\t%d",
+    logger_verbose(__func__, "id_packet with : \n type\t%d\n size\t%d\n id\t%d",
     id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
 
     //Free id_packet
@@ -150,7 +150,7 @@ Image* getMapElevationFromServer(void){
         if (ret==0) break;
         bytes_sent+=ret;
     }
-    logger_print(__func__ ,"Sent %d bytes",bytes_sent);
+    logger_verbose(__func__ ,"Sent %d bytes",bytes_sent);
 
     int msg_len=0;
     int ph_len=sizeof(PacketHeader);
@@ -172,7 +172,7 @@ Image* getMapElevationFromServer(void){
     }
 
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-    logger_print(__func__, "Received %d bytes",msg_len+ph_len);
+    logger_verbose(__func__, "Received %d bytes",msg_len+ph_len);
 
     //free && returns image
     Packet_free(&(request->header));
@@ -205,7 +205,7 @@ Image* getMapTextureFromServer(void){
         if (ret==0) break;
         bytes_sent+=ret;
     }
-    logger_print(__func__, "Sent %d bytes",bytes_sent);
+    logger_verbose(__func__, "Sent %d bytes",bytes_sent);
     int msg_len=0;
     int ph_len=sizeof(PacketHeader);
 
@@ -217,7 +217,7 @@ Image* getMapTextureFromServer(void){
     }
     PacketHeader* incoming_pckt=(PacketHeader*)buf_rcv;
     size=incoming_pckt->size-ph_len;
-    logger_print(__func__, "Received %d bytes",size);
+    logger_verbose(__func__, "Received %d bytes",size);
 
     msg_len=0;
     while(msg_len<size){
@@ -227,7 +227,7 @@ Image* getMapTextureFromServer(void){
         msg_len+=ret;
     }
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-    logger_print(__func__, "Received %d bytes %d",msg_len+ph_len);
+    logger_verbose(__func__, "Received %d bytes %d",msg_len+ph_len);
 
     //free
     Packet_free(&(request->header));
@@ -260,7 +260,7 @@ int postVehicleTexture(Image* texture, int id){
         if (ret==0) break;
         bytes_sent+=ret;
     }
-    logger_print(__func__, "Sent %d bytes",bytes_sent);
+    logger_verbose(__func__, "Sent %d bytes",bytes_sent);
     return 0;
 }
 
@@ -309,7 +309,7 @@ Image* getVehicleTexture(int id){
         }
 
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-	logger_print(__func__, "Received %d bytes",msg_len+ph_len);
+	logger_verbose(__func__, "Received %d bytes",msg_len+ph_len);
     Image* im=deserialized_packet->image;
 
     free(deserialized_packet);
@@ -327,7 +327,7 @@ int postQuitPacket(int id){
     idpckt->id=id;
     idpckt->header=ph;
     int size=Packet_serialize(buf_send,&(idpckt->header));
-    logger_print(__func__, "Sending quit packet of %d bytes",size);
+    logger_verbose(__func__, "Sending quit packet of %d bytes",size);
     int msg_len=0;
     while(msg_len<size){
         int ret=send(socket_desc,buf_send+msg_len,size-msg_len,0);
@@ -336,7 +336,7 @@ int postQuitPacket(int id){
         if (ret==0) break;
         msg_len+=ret;
     }
-    logger_print(__func__, "Quit packet was successfully sent");
+    logger_verbose(__func__, "Quit packet was successfully sent");
     return 0;
 
 }
@@ -360,18 +360,59 @@ void createUDPConnection(void){
     udp_server.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
     udp_server.sin_family = AF_INET;
     udp_server.sin_port = udp_port_number;
-    logger_print(__func__, "UDP socket successfully created");
+    logger_verbose(__func__, "UDP socket successfully created");
 }
+
+
+int sendUpdates(int socket_udp, struct sockaddr_in server_addr, int serverlen){
+    char buf_send[BUFFER_SIZE];
+    PacketHeader ph;
+    ph.type=VehicleUpdate;
+    VehicleUpdatePacket* vup=(VehicleUpdatePacket*)malloc(sizeof(VehicleUpdatePacket));
+    vup->header=ph;
+
+    //get fields
+    WorldExtended_getVehicleForcesUpdate(we, vehicle, &(vup->translational_force), &(vup->rotational_force));
+
+    //is needed? WorldExtended_getVehicleXYT(we, vehicle ,&(vup->x),&(vup->y),&(vup->theta));
+
+    //my_id
+    vup->id=vehicle->id;
+
+    int size=Packet_serialize(buf_send, &vup->header);
+    int bytes_sent = sendto(socket_udp, buf_send, size, 0, (const struct sockaddr *) &server_addr,(socklen_t) serverlen);
+
+    logger_verbose(__func__, "VehicleUpdatePacket of %d bytes.\n\ttranslational = %f\n\trotational = %f",bytes_sent,vup->translational_force,vup->rotational_force);
+    Packet_free(&(vup->header));
+
+    if(bytes_sent<0)
+        return -1;
+    return 0;
+}
+
+
+
+
 
 /*
  * This thread sends only vehicleUpdatePackets to server
  * until running is true (set it to false to stop it)
  */
 void* UDPSenderThread(void* args){
+
+    int serverlen=sizeof(udp_server);
+
     while(running){
+        int ret = sendUpdates(socket_udp, udp_server, serverlen);
+
+        if(ret==-1)
+            logger_verbose(__func__, "Cannot send VehicleUpdatePacket");
+
+        //how much sleep?
         sleep(1);
     }
-    return NULL;
+
+    pthread_exit(NULL);
 }
 
 /*
@@ -499,7 +540,7 @@ int main(int argc, char **argv) {
 
     //FILLME join the threads (running = false;)
 
-    logger_print(__func__, "Joining UDP threads");
+    logger_verbose(__func__, "Joining UDP threads");
     running = false;
 
 
