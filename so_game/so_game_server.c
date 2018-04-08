@@ -25,6 +25,12 @@
 
 int is_up = 0;
 
+//GLOBAL
+
+int server_desc;
+
+
+
 typedef struct{
   struct sockaddr_in server_addr;
   struct sockaddr_in* client_addr;
@@ -56,30 +62,16 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive map elevation request from client.\n");
 
-  /*
-  while(msg_len < ph_len){
-    ret = recv(tcpArgs->client_socket, buf_rcv+msg_len, ph_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server - Header Check] Can't receive surface elevation request from client.\n");
-    }
-
-    msg_len += ret;
-
-  }
-  */
-
-  logger_verbose(__func__, "[Server] Bytes received : %zu bytes.\n", msg_len);
+  logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
   ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
 
-  logger_verbose(__func__, "[Server - Header Check] incoming_packet with : type\t%d\nsize\t%d\n", incoming_packet->header.type, incoming_packet->header.size);
+  logger_verbose(__func__, "incoming_packet with : type\t%d\nsize\t%d\n", incoming_packet->header.type, incoming_packet->header.size);
 
   if(incoming_packet->header.type == GetElevation)
-    logger_verbose(__func__, "[Server - Header Check] Passed.\n");
+    logger_verbose(__func__, "Header Check passed.\n");
   else{
-    logger_verbose(__func__, "[Server - Header Check] Failed.\n");
+    logger_verbose(__func__, "Header Check failed.\n");
     return 0;
   }
 
@@ -88,7 +80,7 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   PacketHeader header_elevation_surface;
   ImagePacket* img_packet_elevation_surface = (ImagePacket*) malloc(sizeof(ImagePacket));
 
-  logger_verbose(__func__, "[Server] Sending elevation surface to client #%d.\n", client_id);
+  logger_verbose(__func__, "Sending elevation surface to client #%d.\n", client_id);
 
   header_elevation_surface.type = PostElevation;
 
@@ -96,14 +88,14 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   img_packet_elevation_surface->id = 0;
   img_packet_elevation_surface->image = tcpArgs->surface_elevation;
 
-  logger_verbose(__func__, "[Server] img_packet_elevation_surface with :\ntype\t%d\nsize\t%d\n", img_packet_elevation_surface->header.type, img_packet_elevation_surface->header.size);
-  logger_verbose(__func__, "[Server] Serialize img_packet_elevation_surface.\n");
+  logger_verbose(__func__, "img_packet_elevation_surface with :\ntype\t%d\nsize\t%d\n", img_packet_elevation_surface->header.type, img_packet_elevation_surface->header.size);
+  logger_verbose(__func__, "Serialize img_packet_elevation_surface.\n");
 
   int img_packet_buffer_size = Packet_serialize(img_packet_buffer, &img_packet_elevation_surface->header);
 
-  logger_verbose(__func__, "[Server] Bytes written in the buffer : %d.\n", img_packet_buffer_size);
+  logger_verbose(__func__, "Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
- 
+
   /*
   while(msg_len < ph_len){
     ret = send(tcpArgs->client_socket, img_packet_buffer + msg_len, ph_len - msg_len, 0);
@@ -134,7 +126,7 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server - Data] Bytes sent : %zu bytes.\n", msg_len);
+  logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
   return 1;
 }
 
@@ -147,7 +139,7 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
 
 
 
-  logger_verbose(__func__, "[Server] Waiting texture surface request from client #%d.\n", client_id);
+  logger_verbose(__func__, "Waiting texture surface request from client #%d.\n", client_id);
 
   //Receive texture surface request from client
   msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
@@ -166,15 +158,15 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server] Bytes received : %zu bytes.\n", msg_len);
+  logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
   ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
-  logger_verbose(__func__, "[Server - Header Check] incoming_packet with :\ntype\t%d\nsize\t%d\n.",incoming_packet->header.type, incoming_packet->header.size);
+  logger_verbose(__func__, "incoming_packet with :\ntype\t%d\nsize\t%d\n.",incoming_packet->header.type, incoming_packet->header.size);
 
   if(incoming_packet->header.type == GetTexture)
-    logger_verbose(__func__, "[Server - Header Check] Passed.\n");
+    logger_verbose(__func__, "Header Check passed.\n");
   else{
-    logger_verbose(__func__, "[Server - Header Check] Failed.\n");
+    logger_verbose(__func__, "Header Check failed.\n");
     return 0;
   }
 
@@ -182,7 +174,7 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   ImagePacket* img_packet_texture_surface = (ImagePacket*) malloc(sizeof(ImagePacket));
   //size_t ph_len = sizeof(PacketHeader);
 
-  logger_verbose(__func__, "[Server] Sending texture surface to client #%d.\n", client_id);
+  logger_verbose(__func__, "Sending texture surface to client #%d.\n", client_id);
 
   header_texture_surface.type = PostTexture;
 
@@ -190,15 +182,15 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   img_packet_texture_surface->id = 0;
   img_packet_texture_surface->image = tcpArgs->surface_texture;
 
-  logger_verbose(__func__, "[Server] img_packet_texture_surface with :\ntype\t%d\nsize\t%d\n", img_packet_texture_surface->header.type, img_packet_texture_surface->header.size);
+  logger_verbose(__func__, "img_packet_texture_surface with :\ntype\t%d\nsize\t%d\n", img_packet_texture_surface->header.type, img_packet_texture_surface->header.size);
 
-  logger_verbose(__func__, "[Server] Serialize img_packet_texture_surface.\n");
+  logger_verbose(__func__, "Serialize img_packet_texture_surface.\n");
 
   int img_packet_buffer_size = Packet_serialize(img_packet_buffer, &img_packet_texture_surface->header);
 
-  logger_verbose(__func__, "[Server] Bytes written in the buffer : %d.\n", img_packet_buffer_size);
+  logger_verbose(__func__, "Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
-  
+
   /*
   while(msg_len < ph_len){
     ret = send(tcpArgs->client_socket, img_packet_buffer + msg_len, ph_len-msg_len, 0);
@@ -245,17 +237,17 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
     if(ret == -1){
       if(errno == EINTR)
 	continue;
-      ERROR_HELPER(ret, "[Server] Can't receive player texture from client.\n");
+      ERROR_HELPER(ret, "Can't receive player texture from client.\n");
     }
     break;
   }
 
   ImagePacket* incoming_packet = (ImagePacket*) Packet_deserialize(buf_rcv, msg_len);
-  logger_verbose(__func__, "[Server] incoming_packet with : \n type\t%d\n size\t%d\n.",incoming_packet->header.type, ph_len);
+  logger_verbose(__func__, "incoming_packet with : \n type\t%d\n size\t%d\n.",incoming_packet->header.type, ph_len);
 
   if(incoming_packet->header.type == PostTexture && incoming_packet->id > 0){
 
-    logger_verbose(__func__, "[Server] Passed.\n");
+    logger_verbose(__func__, "Passed.\n");
 
     Image* player_texture = incoming_packet->image;
 
@@ -264,13 +256,13 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
     Vehicle_init(vehicle, tcpArgs->ws->w, client_id, player_texture);
     WorldServer_addClient(tcpArgs->ws, vehicle, tcpArgs->client_addr);
 
-    logger_verbose(__func__, "[Server] Vehicle added to world server.\n");
+    logger_verbose(__func__, "Vehicle added to world server.\n");
 
     Packet_free(&incoming_packet->header);
     return player_texture;
 
   }else{
-    logger_verbose(__func__, "[Server] Failed.\n");
+    logger_verbose(__func__, "Failed.\n");
     return NULL;
   }
 
@@ -283,7 +275,7 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
   char buf_rcv[BUFFER_SIZE];
   int ph_len = sizeof(PacketHeader);
 
-  logger_verbose(__func__, "[Server] Waiting player texture request from client #%d.\n", client_id);
+  logger_verbose(__func__, "Waiting player texture request from client #%d.\n", client_id);
 
   //Receive player texture request from client
   while(msg_len < ph_len){
@@ -291,20 +283,20 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
     if(ret == -1){
       if(errno == EINTR)
 	continue;
-      ERROR_HELPER(ret, "[Server - Header Check] Can't receive player texture header request from client.\n");
+      ERROR_HELPER(ret, "Can't receive player texture header request from client.\n");
     }
     msg_len += ret;
   }
 
-  logger_verbose(__func__, "[Server - Header Check] Bytes received : %d.\n", msg_len);
+  logger_verbose(__func__, "Bytes received : %d.\n", msg_len);
 
   PacketHeader* incoming_packet = (PacketHeader*) buf_rcv;
-  logger_verbose(__func__, "[Server - Header Check] incoming_packet with : \n type\t%d\n size\t%d\n.", incoming_packet->type, incoming_packet->size);
+  logger_verbose(__func__, "ncoming_packet with : \n type\t%d\n size\t%d\n.", incoming_packet->type, incoming_packet->size);
 
   if(incoming_packet->type == GetTexture)
-    logger_verbose(__func__, "[Server - Header Check] Passed.\n");
+    logger_verbose(__func__, "Header Check Passed.\n");
   else{
-    logger_verbose(__func__, "[Server - Header Check] Failed.\n");
+    logger_verbose(__func__, "Header Check Failed.\n");
     return 0;
   }
 
@@ -320,7 +312,7 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
     if(ret == -1){
       if(errno == EINTR)
 	continue;
-      ERROR_HELPER(ret, "[Server] Can't send player texture header to client.\n");
+      ERROR_HELPER(ret, "Can't send player texture header to client.\n");
     }
 
     msg_len += ret;
@@ -343,13 +335,13 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
     if(ret == -1){
       if(errno == EINTR)
 	continue;
-      ERROR_HELPER(ret, "[Server - Data] Can't send img_packet player texture packet to client.\n");
+      ERROR_HELPER(ret, "Can't send img_packet player texture packet to client.\n");
     }
 
     msg_len += ret;
   }
 
-  logger_verbose(__func__, "[Server] Bytes sent : %d.\n", msg_len);
+  logger_verbose(__func__, "Bytes sent : %d.\n", msg_len);
 
   return 1;
 }
@@ -361,7 +353,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
   size_t pi_len = sizeof(IdPacket);
   size_t msg_len;
 
-  logger_verbose(__func__, "[Server] Receiving an id request from client.\n");
+  logger_verbose(__func__, "Receiving an id request from client.\n");
 
   //Receive an id request from client
   msg_len = griso_recv(tcpArgs->client_socket, id_packet_buffer, pi_len);
@@ -377,7 +369,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
     break;
   }
   */
-  logger_verbose(__func__, "[Server - Header Check] Bytes received : %d bytes.\n", msg_len);
+  logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
   IdPacket* id_packet = (IdPacket*) Packet_deserialize(id_packet_buffer, msg_len);
 
@@ -386,13 +378,13 @@ int getIdFromClient(TCPArgs* tcpArgs){
 
   //Check if client satisfied game protocol
   if(id_packet->header.type == GetId && id_packet->id == -1){
-    logger_verbose(__func__, "[Server Header - Check] Passed.\n");
-    logger_verbose(__func__, "[Server] A client required an id.\n");
+    logger_verbose(__func__, "Header Check Passed.\n");
+    logger_verbose(__func__, "A client required an id.\n");
 
     return 1;
   }
 
-  logger_verbose(__func__,"[Server - Header Check] Failed.\n");
+  logger_verbose(__func__,"Header Check Failed.\n");
 
   return 0;
 }
@@ -486,7 +478,7 @@ void createTCPConnection(TCPArgs* tcpArgs){
   tcpArgs->client_addr = calloc(1, sizeof(struct sockaddr_in));
 
   //Initialize server socket for listening
-  tcpArgs->server_desc = socket(AF_INET, SOCK_STREAM, 0);
+  server_desc = socket(AF_INET, SOCK_STREAM, 0);
   ERROR_HELPER(tcpArgs->server_desc, "Can't create a server socket.\n");
 
   tcpArgs->server_addr.sin_addr.s_addr = INADDR_ANY;
@@ -495,15 +487,15 @@ void createTCPConnection(TCPArgs* tcpArgs){
 
   //We enable SO_REUSEADDR to restart server after a crash
   int reuseaddr_opt = 1;
-  ret = setsockopt(tcpArgs->server_desc, SOL_SOCKET, SO_REUSEADDR, &reuseaddr_opt, sizeof(reuseaddr_opt));
+  ret = setsockopt(server_desc, SOL_SOCKET, SO_REUSEADDR, &reuseaddr_opt, sizeof(reuseaddr_opt));
   ERROR_HELPER(ret, "Can't set reuseaddr option.\n");
 
   //Now, we bind address to socket
-  ret = bind(tcpArgs->server_desc, (struct sockaddr*) &(tcpArgs->server_addr), tcpArgs->sockaddr_len);
+  ret = bind(server_desc, (struct sockaddr*) &(tcpArgs->server_addr), tcpArgs->sockaddr_len);
   ERROR_HELPER(ret, "Can't bind address to socket.\n");
 
   //Start listening on server desc
-  ret = listen(tcpArgs->server_desc, MAX_CONNECTIONS);
+  ret = listen(server_desc, MAX_CONNECTIONS);
   ERROR_HELPER(ret, "Can't listen on server desc.\n");
 
   is_up = 1;
@@ -573,7 +565,7 @@ void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
   int ret;
 
   while(is_up){
-    tcpArgs->client_socket = accept(tcpArgs->server_desc, (struct sockaddr*) tcpArgs->client_addr, (socklen_t*)&(tcpArgs->sockaddr_len));
+    tcpArgs->client_socket = accept(server_desc, (struct sockaddr*) tcpArgs->client_addr, (socklen_t*)&(tcpArgs->sockaddr_len));
     ERROR_HELPER(tcpArgs->client_socket, "Can't accept incoming connection.\n");
 
     printf("Incoming connection accepted.\n");
@@ -610,14 +602,19 @@ void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
 
 }
 
-
+//TODO handle N users connected!
+void cleanup(void){
+    int ret = close(server_desc);
+    ERROR_HELPER(ret, "Can't close server tcp socket.\n");
+    printf("...");
+}
 
 void signalHandler(int signal){
   switch (signal) {
   case SIGHUP:
     break;
   case SIGINT:
-    is_up = 0;
+    cleanup();
     break;
   default:
     fprintf(stderr, "Uncaught signal: %d\n", signal);
@@ -711,7 +708,7 @@ int main(int argc, char **argv) {
 
   //close socket
 
-  ret = close(tcpArgs->server_desc);
+  ret = close(server_desc);
   ERROR_HELPER(ret, "Can't close server tcp socket.\n");
 
   ret = close(udpArgs->server_desc);

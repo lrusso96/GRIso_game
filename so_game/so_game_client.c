@@ -87,9 +87,11 @@ int getIdFromServer(void){
     id_packet->header = id_header;
     id_packet->id = -1;  //id = -1 to ask an id
 
-    logger_verbose(__func__, "id_packet with :\n type\t%d\n size\t%d\n id\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
+
 
     int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
+
+    logger_verbose(__func__, "id_packet with :\n type\t%d\n size\t%d\n id\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
 
     logger_verbose(__func__, "Bytes to send : %d bytes.", bytes_to_send);
 
@@ -387,6 +389,12 @@ void* UDPReceiverThread(void* args){
 
 //--------------------------------------->
 
+
+void cleanup(void){
+    int ret=close(socket_desc);
+    ERROR_HELPER(ret,"Something went wrong closing TCP socket");
+}
+
 /*
  * Signal Handling
  */
@@ -395,7 +403,8 @@ void signalHandler(int signal){
         case SIGHUP:
             break;
         case SIGINT:
-            running=0;
+            running=false;
+            cleanup();
             break;
         default:
             fprintf(stderr, "Uncaught signal: %d\n", signal);
