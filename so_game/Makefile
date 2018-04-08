@@ -25,6 +25,7 @@ OBJS = vec3.o\
        world_server.o\
        world_viewer.o\
        so_game_protocol.o\
+       grisonet.o\
 
 HEADERS=utils.h\
 	logger.h\
@@ -39,6 +40,7 @@ HEADERS=utils.h\
 	world_extended.h\
 	world_server.h\
 	world_viewer.h\
+        grisonet.h\
 
 %.o:	%.c $(HEADERS)
 	$(CC) $(CCOPTS) -c -o $@  $<

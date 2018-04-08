@@ -20,6 +20,8 @@
 #include "vehicle.h"
 #include "world_extended.h"
 #include "world_viewer.h"
+#include "logger.h"
+#include "grisonet.h"
 
 
 /*
@@ -48,7 +50,7 @@ bool running = false;
  * Create TCP connection
  * the return value is assigned to socket_desc global variable
  */
-void createTCPConnection(void){
+void createTCPConnection(int server_port){
     int ret;
     struct sockaddr_in server_addr = {0};
 
@@ -59,7 +61,7 @@ void createTCPConnection(void){
     //setting up parameters for the connection
     server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(SERVER_PORT);
+    server_addr.sin_port = htons(server_port);
 
     //initialize a connection on the socket
     ret = connect(socket_desc, (struct sockaddr*) &server_addr, sizeof(struct sockaddr_in));
@@ -75,9 +77,8 @@ void createTCPConnection(void){
  */
 int getIdFromServer(void){
     char id_packet_buffer[BUFFER_SIZE];
-    size_t id_buffer_size = sizeof(id_packet_buffer);
+    size_t pi_len = sizeof(IdPacket);
     size_t msg_len;
-    int ret;
 
     //Client ask an id to server
     PacketHeader id_header;
@@ -85,41 +86,44 @@ int getIdFromServer(void){
     IdPacket* id_packet = (IdPacket*)malloc(sizeof(IdPacket));
     id_packet->header = id_header;
     id_packet->id = -1;  //id = -1 to ask an id
+
     logger_verbose(__func__, "id_packet with :\n type\t%d\n size\t%d\n id\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
 
     int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
-    logger_verbose(__func__, "Bytes to send : %d", bytes_to_send);
 
-    while(1){
-    ret = send(socket_desc, id_packet_buffer, bytes_to_send, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-    continue;
-        ERROR_HELPER(ret, "Attempt to require an id to server failed..\n");
-      }
-      break;
-    }
-    logger_verbose(__func__, "Bytes sent : %d", ret);
+    logger_verbose(__func__, "Bytes to send : %d bytes.", bytes_to_send);
+
+    //Send id request to server
+    msg_len = griso_send(socket_desc, id_packet_buffer, bytes_to_send);
+    ERROR_HELPER(msg_len, "Can't send id request to server.\n");
+
+    logger_verbose(__func__, "Bytes sent : %d bytes.\n", msg_len);
 
     //Free the id_packet
     Packet_free(&id_packet->header);
 
     //Receive an id from server
+    msg_len = griso_recv(socket_desc, id_packet_buffer, pi_len);
+    ERROR_HELPER(msg_len, "Can't receive an id from server.\n");
+    /*
     while(1){
-    msg_len = recv(socket_desc, id_packet_buffer, id_buffer_size, 0);
-    if(msg_len == -1){
-      if(errno == EINTR)
-    continue;
-      ERROR_HELPER(msg_len, "Can't receive an id from server.\n");
+      msg_len = recv(socket_desc, id_packet_buffer, id_buffer_size, 0);
+      if(msg_len == -1){
+	if(errno == EINTR)
+	  continue;
+	ERROR_HELPER(msg_len, "Can't receive an id from server.\n");
+      }
+      break;
     }
-    break;
-    }
-    logger_verbose(__func__, "Bytes received : %zu", msg_len);
+    */
+    logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
     IdPacket* id_packet_deserialized = (IdPacket*)Packet_deserialize(id_packet_buffer, msg_len);
     int my_id = id_packet_deserialized->id;
+    //printf("id_packet with : \n type\t%d\n size\t%d\n id\t%d\n",
+    //id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
     logger_verbose(__func__, "id_packet with : \n type\t%d\n size\t%d\n id\t%d",
-    id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
+		   id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
 
     //Free id_packet
     Packet_free(&id_packet_deserialized->header);
@@ -131,53 +135,80 @@ int getIdFromServer(void){
  * @return the map (Image*)
  */
 Image* getMapElevationFromServer(void){
-    char buf_send[BUFFER_SIZE];
-    char buf_rcv[BUFFER_SIZE];
-    ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
-    PacketHeader ph;
-    ph.type=GetElevation;
-    request->header=ph;
-    request->id=-1;
-    int size=Packet_serialize(buf_send,&(request->header));
-    if(size==-1) return NULL;
-    int bytes_sent=0;
-    int ret=0;
 
+  char buf_send[BUFFER_SIZE];
+  char buf_rcv[BUFFER_SIZE];
+  ImagePacket* request = (ImagePacket*)malloc(sizeof(ImagePacket));
+  PacketHeader ph;
+  ph.type = GetElevation;
+  request->header = ph;
+  request->id = -1;
+  int size = Packet_serialize(buf_send, &(request->header));
+  if(size == -1) return NULL;
+  size_t msg_len;
+
+  logger_verbose(__func__,"Sending elevation surface request to server.\n");
+
+  //Send map elevation request to server
+  msg_len = griso_send(socket_desc, buf_send, size);
+  ERROR_HELPER(msg_len, "Can't send map elevation request to server.\n");
+
+  /*
     while(bytes_sent<size){
-        ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
+    ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
         if (ret==-1 && errno==EINTR) continue;
         ERROR_HELPER(ret,"Can't send MapElevation request");
         if (ret==0) break;
         bytes_sent+=ret;
     }
-    logger_verbose(__func__ ,"Sent %d bytes",bytes_sent);
+  */
 
-    int msg_len=0;
-    int ph_len=sizeof(PacketHeader);
+  logger_verbose(__func__ , "Bytes sent : %d bytes.\n",msg_len);
+  logger_verbose(__func__, "Receiving elevation surface from server.\n");
+
+  //Receive header of map elevation post from server
+  int ph_len=sizeof(PacketHeader);
+
+  msg_len = griso_recv(socket_desc, buf_rcv, ph_len);
+  ERROR_HELPER(msg_len, "Can't receive header of map elevation post from server.\n");
+
+  /*
     while(msg_len<ph_len){
         ret=recv(socket_desc, buf_rcv, ph_len, 0);
         if (ret==-1 && errno==EINTR) continue;
         ERROR_HELPER(ret, "Cannot read from socket");
         msg_len+=ret;
     }
+  */
+  logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
-    PacketHeader* incoming_pckt=(PacketHeader*)buf_rcv;
-    size=incoming_pckt->size-ph_len;
-    msg_len=0;
+  PacketHeader* incoming_pckt=(PacketHeader*)buf_rcv;
+  size=incoming_pckt->size-ph_len;
+
+  //Receive leftovers of map elevation package from server
+  msg_len = griso_recv(socket_desc, buf_rcv+ph_len, size);
+  ERROR_HELPER(msg_len, "Can't receive leftovers of map elevation package from server.\n");
+  /*
     while(msg_len<size){
         ret=recv(socket_desc, buf_rcv+msg_len+ph_len, size-msg_len, 0);
         if (ret==-1 && errno==EINTR) continue;
         ERROR_HELPER(ret, "Cannot read from socket");
         msg_len+=ret;
     }
+  */
 
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-    logger_verbose(__func__, "Received %d bytes",msg_len+ph_len);
+
+    logger_verbose(__func__, "Bytes received : %d bytes.\n",msg_len+ph_len);
+    logger_verbose(__func__, "Elevation package with :\ntype\t%d\nsize\t%d\nid\t%d\n",
+		   deserialized_packet->header.type, deserialized_packet->header.size,
+		   deserialized_packet->id);
 
     //free && returns image
     Packet_free(&(request->header));
     Image* im=deserialized_packet->image;
     free(deserialized_packet);
+    Image_save(im, "./images/client.pgm");
     return im;
 }
 
@@ -186,18 +217,30 @@ Image* getMapElevationFromServer(void){
  * @return the map (Image*)
  */
 Image* getMapTextureFromServer(void){
+
     char buf_send[BUFFER_SIZE];
     char buf_rcv[BUFFER_SIZE];
-    ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
     PacketHeader ph;
-    ph.type=GetTexture;
-    request->header=ph;
-    request->id=-1;
-    int size=Packet_serialize(buf_send,&(request->header));
-    if(size==-1) return NULL;
-    int bytes_sent=0;
-    int ret=0;
+    ph.type = GetTexture;
 
+    int size_ph = Packet_serialize(buf_send, &ph);
+    printf("size_ph %d\n", size_ph);
+    printf("sizeof(type) : %zu.\n", sizeof(Type));
+
+    ImagePacket* request = (ImagePacket*) malloc(sizeof(ImagePacket));
+    request->header = ph;
+    request->id = -1;
+    int size = Packet_serialize(buf_send, &(request->header));
+    if(size == -1) return NULL;
+    size_t msg_len;
+
+    logger_verbose(__func__, "Sending map texture request to server.\n");
+
+    //Sending map texture request to server
+    msg_len = griso_send(socket_desc, buf_send, size_ph);
+    ERROR_HELPER(msg_len, "Can't send map texture request to server.\n");
+
+    /*
     while(bytes_sent<size){
         ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
         if (ret==-1 && errno==EINTR) continue;
@@ -205,33 +248,53 @@ Image* getMapTextureFromServer(void){
         if (ret==0) break;
         bytes_sent+=ret;
     }
-    logger_verbose(__func__, "Sent %d bytes",bytes_sent);
-    int msg_len=0;
-    int ph_len=sizeof(PacketHeader);
+    */
 
+    logger_verbose(__func__, "Bytes sent : %d bytes.\n", msg_len);
+
+    //Receiving map texture header response from server
+    int ph_len = sizeof(PacketHeader);
+
+    msg_len = griso_recv(socket_desc, buf_rcv, ph_len);
+    ERROR_HELPER(msg_len, "Can't receive map texture header response from server.\n");
+
+    /*
     while(msg_len<ph_len){
         ret=recv(socket_desc, buf_rcv, ph_len, 0);
         if (ret==-1 && errno==EINTR) continue;
         ERROR_HELPER(ret, "Cannot read from socket");
         msg_len+=ret;
     }
-    PacketHeader* incoming_pckt=(PacketHeader*)buf_rcv;
-    size=incoming_pckt->size-ph_len;
-    logger_verbose(__func__, "Received %d bytes",size);
+    */
+    logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
-    msg_len=0;
+    PacketHeader* incoming_pckt = (PacketHeader*)buf_rcv;
+    size = incoming_pckt->size-ph_len;
+
+    //Receiving leftovers of map texture package from server
+    msg_len = griso_recv(socket_desc, buf_rcv+ph_len, size);
+    ERROR_HELPER(msg_len, "Can't receiving leftovers of map texture package from server.\n");
+    /*
     while(msg_len<size){
         ret=recv(socket_desc, buf_rcv+msg_len+ph_len, size-msg_len, 0);
         if (ret==-1 && errno==EINTR) continue;
         ERROR_HELPER(ret, "Cannot read from socket");
         msg_len+=ret;
     }
+    */
+
+    logger_verbose(__func__, "Bytes received : %d bytes.",msg_len);
+
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-    logger_verbose(__func__, "Received %d bytes %d",msg_len+ph_len);
+
+    logger_verbose(__func__, "Texture packet with :\n type\t%d\n size\t%d\n id\t%d\n",
+		   deserialized_packet->header.type, deserialized_packet->header.size,
+		   deserialized_packet->id);
 
     //free
-    Packet_free(&(request->header));
-    Image* im=deserialized_packet->image;
+    Packet_free(&request->header);
+    Image* im = deserialized_packet->image;
+    Image_save(im, "client_texture.ppm");
     free(deserialized_packet);
     return im;
 
@@ -363,56 +426,15 @@ void createUDPConnection(void){
     logger_verbose(__func__, "UDP socket successfully created");
 }
 
-
-int sendUpdates(int socket_udp, struct sockaddr_in server_addr, int serverlen){
-    char buf_send[BUFFER_SIZE];
-    PacketHeader ph;
-    ph.type=VehicleUpdate;
-    VehicleUpdatePacket* vup=(VehicleUpdatePacket*)malloc(sizeof(VehicleUpdatePacket));
-    vup->header=ph;
-
-    //get fields
-    WorldExtended_getVehicleForcesUpdate(we, vehicle, &(vup->translational_force), &(vup->rotational_force));
-
-    //is needed? WorldExtended_getVehicleXYT(we, vehicle ,&(vup->x),&(vup->y),&(vup->theta));
-
-    //my_id
-    vup->id=vehicle->id;
-
-    int size=Packet_serialize(buf_send, &vup->header);
-    int bytes_sent = sendto(socket_udp, buf_send, size, 0, (const struct sockaddr *) &server_addr,(socklen_t) serverlen);
-
-    logger_verbose(__func__, "VehicleUpdatePacket of %d bytes.\n\ttranslational = %f\n\trotational = %f",bytes_sent,vup->translational_force,vup->rotational_force);
-    Packet_free(&(vup->header));
-
-    if(bytes_sent<0)
-        return -1;
-    return 0;
-}
-
-
-
-
-
 /*
  * This thread sends only vehicleUpdatePackets to server
  * until running is true (set it to false to stop it)
  */
 void* UDPSenderThread(void* args){
-
-    int serverlen=sizeof(udp_server);
-
     while(running){
-        int ret = sendUpdates(socket_udp, udp_server, serverlen);
-
-        if(ret==-1)
-            logger_verbose(__func__, "Cannot send VehicleUpdatePacket");
-
-        //how much sleep?
         sleep(1);
     }
-
-    pthread_exit(NULL);
+    return NULL;
 }
 
 /*
@@ -447,19 +469,21 @@ void signalHandler(int signal){
 //--------------------------------------->
 
 int main(int argc, char **argv) {
-    if (argc<2) {
-        printf("usage: %s <player texture>\n", argv[1]);
+    if (argc<3) {
+        printf("usage: %s <player texture> <server port>\n", argv[0]);
         exit(-1);
     }
 
-    printf("loading texture image from %s ... ", argv[2]);
-    Image* my_texture = Image_load(argv[2]);
+    printf("loading texture image from %s ... ", argv[1]);
+    Image* my_texture = Image_load(argv[1]);
     if (my_texture) {
         printf("Done! \n");
     } else {
         printf("Fail! \n");
     }
 
+    int server_port = atoi(argv[2]);
+    assert(server_port == SERVER_TCP_PORT);
 
 
     //setting signal handler
@@ -492,7 +516,7 @@ int main(int argc, char **argv) {
 
 
     //let's create a TCP socket
-    createTCPConnection();
+    createTCPConnection(server_port);
 
     //and here we get from server all needed stuff to play
     int my_id = getIdFromServer();
