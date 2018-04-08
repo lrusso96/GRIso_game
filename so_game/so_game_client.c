@@ -22,7 +22,6 @@
 #include "world_extended.h"
 #include "world_viewer.h"
 #include "logger.h"
-#include "grisonet.h"
 
 
 /*
