@@ -17,6 +17,7 @@ OBJS = vec3.o\
        client_list.o\
        linked_list.o\
        logger.o\
+       grisonet.o\
        surface.o\
        image.o\
        vehicle.o\
@@ -32,6 +33,7 @@ HEADERS=utils.h\
 	image.h\
 	client_list.h\
 	linked_list.h\
+	grisonet.h\
 	so_game_protocol.h\
 	surface.h\
 	vec3.h\

@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "grisonet.h"
 #include "image.h"
 #include "logger.h"
 #include "so_game_protocol.h"
