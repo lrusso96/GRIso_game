@@ -17,6 +17,7 @@ OBJS = vec3.o\
        client_list.o\
        linked_list.o\
        logger.o\
+       random_id.o\
        grisonet.o\
        surface.o\
        image.o\
@@ -30,6 +31,7 @@ OBJS = vec3.o\
 
 HEADERS=utils.h\
 	logger.h\
+	random_id.h\
 	image.h\
 	client_list.h\
 	linked_list.h\

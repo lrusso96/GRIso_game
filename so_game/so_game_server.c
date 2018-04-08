@@ -22,6 +22,7 @@
 #include "utils.h"
 #include "logger.h"
 #include "grisonet.h"
+#include "random_id.h"
 
 int is_up = 0;
 
@@ -29,6 +30,7 @@ int is_up = 0;
 
 int server_desc;
 
+RandomId* randomId;
 
 
 typedef struct{
@@ -190,11 +192,11 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
     //Receive player texture data from client
     msg_len = griso_recv(tcpArgs->client_socket, buf_rcv+ip_len, size);
     ERROR_HELPER(msg_len, "Can't receive player texture date from client.\n");
-    
+
     logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
     ImagePacket* deserialized_packet = (ImagePacket*) Packet_deserialize(buf_rcv, msg_len+ip_len);
-    
+
     logger_verbose(__func__, "deserialized_packet with : \ntype\t%d\nsize\t%d\nid\t%d\n",
 		   deserialized_packet->header.type, deserialized_packet->header.size,
 		   deserialized_packet->id);
@@ -253,7 +255,7 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
   player_texture_header.type = PostTexture;
 
   ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
- 
+
   img_packet_pt->header = player_texture_header;
   img_packet_pt->id = client_id;
   img_packet_pt->image = player_texture;
@@ -282,7 +284,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
   //Receive an id request from client
   msg_len = griso_recv(tcpArgs->client_socket, id_packet_buffer, pi_len);
   ERROR_HELPER(msg_len, "griso_recv failed.\n");
- 
+
   logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
   IdPacket* id_packet = (IdPacket*) Packet_deserialize(id_packet_buffer, msg_len);
@@ -295,7 +297,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
     logger_verbose(__func__, "Header Check Passed.\n");
     logger_verbose(__func__, "A client required an id.\n");
 
-    return 1;
+    return RandomId_getNext(randomId);
   }
 
   logger_verbose(__func__,"Header Check Failed.\n");
@@ -303,7 +305,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
   return 0;
 }
 
-void postIdToClient(TCPArgs* tcpArgs){
+void postIdToClient(TCPArgs* tcpArgs, int client_id){
 
   char id_packet_buffer[BUFFER_SIZE];
   size_t msg_len;
@@ -313,7 +315,10 @@ void postIdToClient(TCPArgs* tcpArgs){
 
   IdPacket* id_packet = (IdPacket*) malloc(sizeof(IdPacket));
   id_packet->header = ph;
-  id_packet->id = ++tcpArgs->ws->clients.size;
+  id_packet->id = client_id;
+
+  //need this?
+  ++tcpArgs->ws->clients.size;
 
   int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
 
@@ -322,7 +327,7 @@ void postIdToClient(TCPArgs* tcpArgs){
   //Send id packet to client
   msg_len = griso_send(tcpArgs->client_socket, id_packet_buffer, bytes_to_send);
   ERROR_HELPER(msg_len, "griso_send failed.\n");
- 
+
   logger_verbose(__func__, "[Server - Data] Bytes sent : %d bytes.\n", msg_len);
   logger_verbose(__func__, "[Server] Client #%d has joined the game.\n",id_packet->id);
 
@@ -342,7 +347,7 @@ void* TCPWork(void* params){
   //Client satisfied game protocol
   if(client_id){
 
-    postIdToClient(tcpArgs);
+    postIdToClient(tcpArgs, client_id);
 
     elevation_surface_flag = postMapElevationToClient(tcpArgs, client_id);
 
@@ -350,7 +355,7 @@ void* TCPWork(void* params){
 
       texture_surface_flag = postMapTextureToClient(tcpArgs, client_id);
       if(texture_surface_flag){
-	
+
 	player_texture = getVehicleTextureFromClient(tcpArgs, client_id);
 	if(player_texture->rows && player_texture->cols){
 
@@ -529,6 +534,8 @@ int main(int argc, char **argv) {
     exit(-1);
   }
 
+   randomId = RandomId_init();
+
   char* elevation_filename=argv[1];
   char* texture_filename=argv[2];
 
@@ -627,6 +634,8 @@ int main(int argc, char **argv) {
   free(tcpArgs->client_addr);
   free(tcpArgs);
   free(udpArgs);
+
+  RandomId_destroy(randomId);
 
   return 0;
 }
