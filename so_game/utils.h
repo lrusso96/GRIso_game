@@ -1,6 +1,8 @@
+#pragma once
 
 #include <string.h>
 #include <errno.h>
+
 
 #define SERVER_ADDRESS  "127.0.0.1"
 #define SERVER_TCP_PORT 2018

@@ -12,6 +12,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "grisonet.h"
 #include "image.h"
 #include "logger.h"
 #include "so_game_protocol.h"
@@ -21,7 +22,6 @@
 #include "world_extended.h"
 #include "world_viewer.h"
 #include "logger.h"
-#include "grisonet.h"
 
 
 /*
@@ -105,12 +105,12 @@ int getIdFromServer(void){
     //Receive an id from server
     msg_len = griso_recv(socket_desc, id_packet_buffer, pi_len);
     ERROR_HELPER(msg_len, "Can't receive an id from server.\n");
-    
+
     logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
     IdPacket* id_packet_deserialized = (IdPacket*)Packet_deserialize(id_packet_buffer, msg_len);
     int my_id = id_packet_deserialized->id;
-    
+
     logger_verbose(__func__, "id_packet with : \n type\t%d\n size\t%d\n id\t%d",
 		   id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
 
@@ -129,7 +129,7 @@ Image* getMapElevationFromServer(void){
   char buf_rcv[BUFFER_SIZE];
   size_t msg_len;
   PacketHeader ph;
-  
+
   ph.type = GetElevation;
 
   ImagePacket* request = (ImagePacket*) malloc(sizeof(ImagePacket));
@@ -169,12 +169,12 @@ Image* getMapElevationFromServer(void){
   logger_verbose(__func__, "Elevation package with :\ntype\t%d\nsize\t%d\nid\t%d\n",
 		 deserialized_packet->header.type, deserialized_packet->header.size,
 		 deserialized_packet->id);
-  
+
   //free && returns image
   Packet_free(&(request->header));
   Image* im=deserialized_packet->image;
   free(deserialized_packet);
-  Image_save(im, "./images/client.pgm");
+  //Image_save(im, "./images/client_surface.pgm");
   return im;
 }
 
@@ -220,11 +220,11 @@ Image* getMapTextureFromServer(void){
     //Receiving leftovers of map texture package from server
     msg_len = griso_recv(socket_desc, buf_rcv+ph_len, size);
     ERROR_HELPER(msg_len, "Can't receiving leftovers of map texture package from server.\n");
-    
+
     logger_verbose(__func__, "Bytes received : %d bytes.",msg_len);
 
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-    
+
     logger_verbose(__func__, "Texture packet with :\n type\t%d\n size\t%d\n id\t%d\n",
 		   deserialized_packet->header.type, deserialized_packet->header.size,
 		   deserialized_packet->id);
@@ -232,7 +232,7 @@ Image* getMapTextureFromServer(void){
     //free
     Packet_free(&request->header);
     Image* im = deserialized_packet->image;
-    Image_save(im, "./images/client_texture.ppm");
+    //Image_save(im, "./images/client_texture.ppm");
     free(deserialized_packet);
     return im;
 }
