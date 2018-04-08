@@ -2,6 +2,11 @@
 
 #include <semaphore.h>
 
+/*
+ * This handles in critical section the unique_id getter method.
+ *
+ */
+
 typedef struct RandomId{
     int id;
     sem_t sem;

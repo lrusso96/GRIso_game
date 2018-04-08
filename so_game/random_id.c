@@ -12,13 +12,16 @@ RandomId* RandomId_init(void){
 }
 
 int RandomId_getNext(RandomId* r){
-    sem_wait(&(r->sem));
+    int ret = sem_wait(&(r->sem));
+    ERROR_HELPER(ret, "sem_wait failed");
     r->id ++;
     int v = r->id;
-    sem_post(&(r->sem));
+    ret = sem_post(&(r->sem));
+    ERROR_HELPER(ret, "sem_post failed");
     return v;
 }
 void RandomId_destroy(RandomId* r){
-    sem_destroy(&(r->sem));
+    int ret = sem_destroy(&(r->sem));
+    ERROR_HELPER(ret, "sem_destroy failed");
     free(r);
 }
