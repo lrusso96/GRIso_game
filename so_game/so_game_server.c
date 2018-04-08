@@ -66,7 +66,7 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
 
   ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
 
-  logger_verbose(__func__, "incoming_packet with : type\t%d\nsize\t%d\n", incoming_packet->header.type, incoming_packet->header.size);
+  logger_verbose(__func__, "incoming_packet with :\ntype\t%d\nsize\t%d\n", incoming_packet->header.type, incoming_packet->header.size);
 
   if(incoming_packet->header.type == GetElevation)
     logger_verbose(__func__, "Header Check passed.\n");
@@ -95,38 +95,12 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
 
   logger_verbose(__func__, "Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
-
-  /*
-  while(msg_len < ph_len){
-    ret = send(tcpArgs->client_socket, img_packet_buffer + msg_len, ph_len - msg_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server - Header] Can't send elevation surface header to client.\n");
-    }
-    msg_len += ret;
-  }
-  */
-
   //Send serialize img_elevation_surface to client
   msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, img_packet_buffer_size);
   ERROR_HELPER(msg_len, "Can't send serialize elevation surface package to client.\n");
 
-  /*
-  while(msg_len < bytes_left){
-    ret = send(tcpArgs->client_socket, img_packet_buffer+ph_len+msg_len, bytes_left-msg_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server - Data] Can't send elevation surface package to client.\n");
-    }
-
-    msg_len += ret;
-
-  }
-  */
-
   logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
+
   return 1;
 }
 
@@ -144,19 +118,6 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   //Receive texture surface request from client
   msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive texture surface request from client.\n");
-  /*
-  msg_len = 0;
-  while(msg_len < ph__len){
-    ret = recv(tcpArgs->client_socket, buf_rcv+msg_len, ph__len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server - Header Check] Can't receive texture surface header request from client.\n");
-    }
-
-    msg_len += ret;
-  }
-  */
 
   logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
@@ -190,161 +151,124 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
 
   logger_verbose(__func__, "Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
-
-  /*
-  while(msg_len < ph_len){
-    ret = send(tcpArgs->client_socket, img_packet_buffer + msg_len, ph_len-msg_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server - Header Check] Can't send texture surface header to client.\n");
-    }
-    msg_len += ret;
-  }
-  */
-
   //Send serialize img_texture_surface to client
   msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, img_packet_buffer_size);
   ERROR_HELPER(msg_len, "Can't send serialized texture surface package to client.\n");
 
-  /*
-  while(msg_len < bytes_left){
-    ret = send(tcpArgs->client_socket, img_packet_buffer+ph_len+msg_len, img_packet_buffer_size-ph_len-msg_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server - Data] Can't send texture surface package to client.\n");
-    }
-
-    msg_len += ret;
-  }
-  */
-
   logger_verbose(__func__, "[Server - Data] Bytes sent : %zu bytes.\n", msg_len);
+
   return 1;
 }
 
+
 Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
 
-  int ret, msg_len = 0;
+  size_t msg_len;
   char buf_rcv[BUFFER_SIZE];
-  int buf_rcv_len = sizeof(buf_rcv);
-  int ph_len = sizeof(PacketHeader);
+  int ip_len = sizeof(ImagePacket);
+  int size;
 
-  //Receive player texture
-  while(msg_len < buf_rcv_len){
-    ret = recv(tcpArgs->client_socket, buf_rcv, buf_rcv_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "Can't receive player texture from client.\n");
-    }
-    break;
-  }
+  logger_verbose(__func__, "Receiving player texture from client #%d.\n", client_id);
 
-  ImagePacket* incoming_packet = (ImagePacket*) Packet_deserialize(buf_rcv, msg_len);
-  logger_verbose(__func__, "incoming_packet with : \n type\t%d\n size\t%d\n.",incoming_packet->header.type, ph_len);
+  //Receive player texture header from client
+  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
+  ERROR_HELPER(msg_len, "Can't receive player texture from client.\n");
+
+  logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
+
+  ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
+
+  logger_verbose(__func__, "incoming_packet with : \ntype\t%d\nsize\t%d\n.",incoming_packet->header.type, incoming_packet->header.size);
+
+  size = incoming_packet->header.size - ip_len;
+
 
   if(incoming_packet->header.type == PostTexture && incoming_packet->id > 0){
 
-    logger_verbose(__func__, "Passed.\n");
+    logger_verbose(__func__, "Header Check Passed.\n");
 
-    Image* player_texture = incoming_packet->image;
+    //Receive player texture data from client
+    msg_len = griso_recv(tcpArgs->client_socket, buf_rcv+ip_len, size);
+    ERROR_HELPER(msg_len, "Can't receive player texture date from client.\n");
+    
+    logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
+
+    ImagePacket* deserialized_packet = (ImagePacket*) Packet_deserialize(buf_rcv, msg_len+ip_len);
+    
+    logger_verbose(__func__, "deserialized_packet with : \ntype\t%d\nsize\t%d\nid\t%d\n",
+		   deserialized_packet->header.type, deserialized_packet->header.size,
+		   deserialized_packet->id);
+
+    Image* player_texture = deserialized_packet->image;
 
     //Build client vehicle and add to world server
     Vehicle* vehicle = (Vehicle*) malloc(sizeof(Vehicle));
+
     Vehicle_init(vehicle, tcpArgs->ws->w, client_id, player_texture);
     WorldServer_addClient(tcpArgs->ws, vehicle, tcpArgs->client_addr);
 
     logger_verbose(__func__, "Vehicle added to world server.\n");
 
-    Packet_free(&incoming_packet->header);
+    //Packet_free(&incoming_packet->header);
     return player_texture;
 
   }else{
-    logger_verbose(__func__, "Failed.\n");
+    logger_verbose(__func__, "Header Check Failed.\n");
     return NULL;
   }
 
 }
 
+
 int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_texture){
 
-  int ret, size, msg_len = 0, bytes_left;
+  int size;
+  size_t msg_len;
   char img_packet_player_texture[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
-  int ph_len = sizeof(PacketHeader);
+  int ip_len = sizeof(IdPacket);
 
   logger_verbose(__func__, "Waiting player texture request from client #%d.\n", client_id);
 
   //Receive player texture request from client
-  while(msg_len < ph_len){
-    ret = recv(tcpArgs->client_socket, buf_rcv+msg_len, ph_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "Can't receive player texture header request from client.\n");
-    }
-    msg_len += ret;
-  }
+  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
+  ERROR_HELPER(msg_len, "Can't receive player texture request from client.\n");
 
-  logger_verbose(__func__, "Bytes received : %d.\n", msg_len);
+  logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
-  PacketHeader* incoming_packet = (PacketHeader*) buf_rcv;
-  logger_verbose(__func__, "ncoming_packet with : \n type\t%d\n size\t%d\n.", incoming_packet->type, incoming_packet->size);
+  ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
 
-  if(incoming_packet->type == GetTexture)
+  logger_verbose(__func__, "incoming_packet with : \ntype\t%d\nsize\t%d\n.", incoming_packet->header.type, incoming_packet->header.size);
+
+  if(incoming_packet->header.type == GetTexture)
     logger_verbose(__func__, "Header Check Passed.\n");
   else{
     logger_verbose(__func__, "Header Check Failed.\n");
     return 0;
   }
 
-  //Send player texture header
+  //Send player texture packet to client
   PacketHeader player_texture_header;
+
   player_texture_header.type = PostTexture;
 
-  size = Packet_serialize(img_packet_player_texture, &(player_texture_header));
-
-  msg_len = 0;
-  while(msg_len < ph_len){
-    ret = send(tcpArgs->client_socket, img_packet_player_texture+msg_len, size-msg_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "Can't send player texture header to client.\n");
-    }
-
-    msg_len += ret;
-  }
-
   ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
-
+ 
   img_packet_pt->header = player_texture_header;
   img_packet_pt->id = client_id;
   img_packet_pt->image = player_texture;
 
   size = Packet_serialize(img_packet_player_texture, &(img_packet_pt->header));
 
-  //Send player texture packet
-  msg_len = 0;
-  bytes_left = size - ph_len;
+  msg_len = griso_send(tcpArgs->client_socket, img_packet_player_texture, size);
+  ERROR_HELPER(msg_len, "Can't send player texture packet to client.\n");
 
-  while(msg_len < bytes_left){
-    ret = send(tcpArgs->client_socket, img_packet_player_texture+ph_len+msg_len, size-msg_len, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "Can't send img_packet player texture packet to client.\n");
-    }
-
-    msg_len += ret;
-  }
-
-  logger_verbose(__func__, "Bytes sent : %d.\n", msg_len);
+  logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
 
   return 1;
 }
+
+
 
 
 int getIdFromClient(TCPArgs* tcpArgs){
@@ -358,17 +282,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
   //Receive an id request from client
   msg_len = griso_recv(tcpArgs->client_socket, id_packet_buffer, pi_len);
   ERROR_HELPER(msg_len, "griso_recv failed.\n");
-  /*
-  while(1){
-    msg_len = recv(tcpArgs->client_socket, id_packet_buffer, id_buffer_size, 0);
-    if(msg_len == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(msg_len, "[Server - Header Check] Can't receive an id request from client.\n");
-    }
-    break;
-  }
-  */
+ 
   logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
   IdPacket* id_packet = (IdPacket*) Packet_deserialize(id_packet_buffer, msg_len);
@@ -408,18 +322,7 @@ void postIdToClient(TCPArgs* tcpArgs){
   //Send id packet to client
   msg_len = griso_send(tcpArgs->client_socket, id_packet_buffer, bytes_to_send);
   ERROR_HELPER(msg_len, "griso_send failed.\n");
-  /*
-  while(1){
-    ret = send(tcpArgs->client_socket, id_packet_buffer, bytes_to_send, 0);
-    if(ret == -1){
-      if(errno == EINTR)
-	continue;
-      ERROR_HELPER(ret, "[Server] Attempt to send id to client failed.\n");
-    }
-    break;
-  }
-  */
-
+ 
   logger_verbose(__func__, "[Server - Data] Bytes sent : %d bytes.\n", msg_len);
   logger_verbose(__func__, "[Server] Client #%d has joined the game.\n",id_packet->id);
 
@@ -429,8 +332,8 @@ void postIdToClient(TCPArgs* tcpArgs){
 
 void* TCPWork(void* params){
 
-  int client_id, elevation_surface_flag, texture_surface_flag; //, post_pt_flag;
-  //Image* player_texture;
+  int client_id, elevation_surface_flag, texture_surface_flag, post_pt_flag;
+  Image* player_texture;
 
   TCPArgs* tcpArgs = (TCPArgs*) params;
 
@@ -447,20 +350,16 @@ void* TCPWork(void* params){
 
       texture_surface_flag = postMapTextureToClient(tcpArgs, client_id);
       if(texture_surface_flag){
-	/*
+	
 	player_texture = getVehicleTextureFromClient(tcpArgs, client_id);
 	if(player_texture->rows && player_texture->cols){
 
 	  post_pt_flag = postVehicleTextureToClient(tcpArgs, client_id, player_texture);
 	  if(post_pt_flag){
 	    //Client is ready to play
+	    printf("Listening update packets from client.\n");
 	  }
-
 	}
-
-      }
-
-    */
       }
     }
   }

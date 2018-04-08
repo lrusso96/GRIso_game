@@ -103,7 +103,7 @@ int getIdFromServer(void){
 
     int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
 
-    logger_verbose(__func__, "id_packet with :\n type\t%d\n size\t%d\n id\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
+    logger_verbose(__func__, "id_packet with :\ntype\t%d\nsize\t%d\nid\t%d",id_packet->header.type, id_packet->header.size, id_packet->id);
 
     logger_verbose(__func__, "Bytes to send : %d bytes.", bytes_to_send);
 
@@ -125,7 +125,7 @@ int getIdFromServer(void){
     IdPacket* id_packet_deserialized = (IdPacket*)Packet_deserialize(id_packet_buffer, msg_len);
     int my_id = id_packet_deserialized->id;
 
-    logger_verbose(__func__, "id_packet with : \n type\t%d\n size\t%d\n id\t%d",
+    logger_verbose(__func__, "id_packet with : \ntype\t%d\nsize\t%d\nid\t%d",
 		   id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
 
     //Free id_packet
@@ -239,7 +239,7 @@ Image* getMapTextureFromServer(void){
 
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
 
-    logger_verbose(__func__, "Texture packet with :\n type\t%d\n size\t%d\n id\t%d\n",
+    logger_verbose(__func__, "Texture packet with :\ntype\t%d\nsize\t%d\n id\t%d\n",
 		   deserialized_packet->header.type, deserialized_packet->header.size,
 		   deserialized_packet->id);
 
@@ -254,27 +254,29 @@ Image* getMapTextureFromServer(void){
 /*
  * post my vehicle texture to server
  */
-int postVehicleTexture(Image* texture){
-    char buf_send[BUFFER_SIZE];
-    ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
-    PacketHeader ph;
-    ph.type=PostTexture;
-    request->header=ph;
-    request->id = my_id;
-    request->image=texture;
+int postVehicleTexture(Image* texture, int id){
 
-    int size=Packet_serialize(buf_send,&(request->header));
-    if(size==-1) return -1;
-    int bytes_sent=0;
-    int ret=0;
-    while(bytes_sent<size){
-        ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret,"Can't send my vehicle texture");
-        if (ret==0) break;
-        bytes_sent+=ret;
-    }
-    logger_verbose(__func__, "Sent %d bytes",bytes_sent);
+    char buf_send[BUFFER_SIZE];
+    size_t msg_len;
+
+    logger_verbose(__func__, "Sending vehicle texture to server.\n");
+
+    ImagePacket* request = (ImagePacket*)malloc(sizeof(ImagePacket));
+    PacketHeader ph;
+
+    ph.type = PostTexture;
+    request->header = ph;
+    request->id = id;
+    request->image = texture;
+
+    int size = Packet_serialize(buf_send, &(request->header));
+    if(size == -1) return -1;
+    
+    //Send vehicle texture to server
+    msg_len = griso_send(socket_desc, buf_send, size);
+    ERROR_HELPER(msg_len, "Can't send vehicle texture to server.\n");
+
+    logger_verbose(__func__, "Bytes sent : %zu bytes.", msg_len);
     return 0;
 }
 
@@ -283,52 +285,58 @@ int postVehicleTexture(Image* texture){
  * @return the texture
  */
 Image* getVehicleTexture(int id){
+
     char buf_send[BUFFER_SIZE];
     char buf_rcv[BUFFER_SIZE];
-    ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
+   
+    ImagePacket* request = (ImagePacket*)malloc(sizeof(ImagePacket));
     PacketHeader ph;
-    ph.type=GetTexture;
-    request->header=ph;
-    request->id=id;
-    int size=Packet_serialize(buf_send,&(request->header));
-    if(size==-1) return NULL;
-    int bytes_sent=0;
-    int ret=0;
-    while(bytes_sent<size){
-        ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret,"Can't request a texture of a vehicle");
-        if (ret==0) break;
-        bytes_sent+=ret;
-    }
+    size_t msg_len;
+    size_t ip_len = sizeof(ImagePacket);
+
+    logger_verbose(__func__, "Sending player texture request to server.\n");
+    
+    ph.type = GetTexture;
+    request->header = ph;
+    request->id = id;
+    
+    int size = Packet_serialize(buf_send, &(request->header));
+    if(size == -1) return NULL;
+
+    msg_len = griso_send(socket_desc, buf_send, size);
+    ERROR_HELPER(msg_len, "Can't send player texture request to server.\n");
+
+    logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
+  
     Packet_free(&(request->header));
+    
+    //Receiving player texture from server
+    msg_len = griso_recv(socket_desc, buf_rcv, ip_len);
+    ERROR_HELPER(msg_len, "Can't receive player texture header from server.\n");
+    
+    logger_verbose(__func__, "Bytes received : %zu.\n", msg_len);
+    
+    ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
+    size = incoming_packet->header.size - ip_len;
 
-    int ph_len=sizeof(PacketHeader);
-    int msg_len=0;
-    while(msg_len<ph_len){
-        ret=recv(socket_desc, buf_rcv+msg_len, ph_len-msg_len, 0);
-        if (ret==-1 && errno == EINTR) continue;
-        ERROR_HELPER(msg_len, "Cannot read from socket");
-        msg_len+=ret;
-        }
-    PacketHeader* header=(PacketHeader*)buf_rcv;
-    size=header->size-ph_len;
+    msg_len = griso_recv(socket_desc, buf_rcv+ip_len, size);
+    ERROR_HELPER(msg_len, "Can't receive player texture package from server.\n");
+    
+    logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
+    
+    ImagePacket* deserialized_packet = (ImagePacket*) Packet_deserialize(buf_rcv, msg_len+ip_len);
 
-    msg_len=0;
-    while(msg_len<size){
-        ret=recv(socket_desc, buf_rcv+msg_len+ph_len, size-msg_len, 0);
-        if (ret==-1 && errno == EINTR) continue;
-        ERROR_HELPER(msg_len, "Cannot read from socket");
-        msg_len+=ret;
-        }
+    logger_verbose(__func__, "deserialized_packet with : \ntype\t%d\nsize\t%d\nid\t%d\n",
+		   deserialized_packet->header.type, deserialized_packet->header.size,
+		   deserialized_packet->id);
 
-    ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-	logger_verbose(__func__, "Received %d bytes",msg_len+ph_len);
-    Image* im=deserialized_packet->image;
+    Image* im = deserialized_packet->image;
 
+    //Image_save(im, "./images/player_texture.ppm");
     free(deserialized_packet);
     return im;
 }
+
 
 /*
  * notify server that the client "id" (me!) is quitting
@@ -524,7 +532,7 @@ int main(int argc, char **argv) {
     my_id = getIdFromServer();
     map_elevation= getMapElevationFromServer();
     map_texture= getMapTextureFromServer();
-    ret = postVehicleTexture(my_texture_for_server);
+    ret = postVehicleTexture(my_texture_for_server, my_id);
     ERROR_HELPER(ret,"Cannot post my vehicle");
     Image* my_texture_from_server= getVehicleTexture(my_id);
 
