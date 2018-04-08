@@ -24,13 +24,12 @@ WorldExtended* WorldExtended_init(Image* surface_elevation,
 void WorldExtended_destroy(WorldExtended* we){
 
     World* w = we->w;
-
     ListItem* item=w->vehicles.first;
     while(item){
         Vehicle* v=(Vehicle*)item;
         item = item->next;
         WorldExtended_detachVehicle(we, v->id);
-        printf("pippo\n");
+
   }
 
 

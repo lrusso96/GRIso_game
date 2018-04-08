@@ -36,8 +36,20 @@ int socket_udp;
 struct sockaddr_in udp_server;
 //wrapper of World
 WorldExtended* we;
+bool world_created = false;
+
+//images
+Image* map_elevation;
+Image* map_texture;
+Image* my_texture;
+
+int my_id;
 
 bool running = false;
+
+bool udp_threads_created = false;
+pthread_t UDP_sender, UDP_receiver;
+pthread_attr_t attr1, attr2;
 
 //--------------------------------------->
 
@@ -242,13 +254,13 @@ Image* getMapTextureFromServer(void){
 /*
  * post my vehicle texture to server
  */
-int postVehicleTexture(Image* texture, int id){
+int postVehicleTexture(Image* texture){
     char buf_send[BUFFER_SIZE];
     ImagePacket* request=(ImagePacket*)malloc(sizeof(ImagePacket));
     PacketHeader ph;
     ph.type=PostTexture;
     request->header=ph;
-    request->id=id;
+    request->id = my_id;
     request->image=texture;
 
     int size=Packet_serialize(buf_send,&(request->header));
@@ -321,12 +333,12 @@ Image* getVehicleTexture(int id){
 /*
  * notify server that the client "id" (me!) is quitting
  */
-int postQuitPacket(int id){
+int postQuitPacket(void){
     char buf_send[BUFFER_SIZE];
     IdPacket* idpckt=(IdPacket*)malloc(sizeof(IdPacket));
     PacketHeader ph;
     ph.type=Quit;
-    idpckt->id=id;
+    idpckt->id = my_id;
     idpckt->header=ph;
     int size=Packet_serialize(buf_send,&(idpckt->header));
     logger_verbose(__func__, "Sending quit packet of %d bytes",size);
@@ -370,9 +382,16 @@ void createUDPConnection(void){
  * until running is true (set it to false to stop it)
  */
 void* UDPSenderThread(void* args){
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
     while(running){
-        sleep(1);
+        sleep(10);
+        printf("...");
     }
+
+    printf("fine 1");
+
     return NULL;
 }
 
@@ -381,8 +400,10 @@ void* UDPSenderThread(void* args){
  * until running is true (set it to false to stop it)
  */
 void* UDPReceiverThread(void* args){
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
     while(running){
-        sleep(1);
+        sleep(10);
     }
     return NULL;
 }
@@ -391,8 +412,46 @@ void* UDPReceiverThread(void* args){
 
 
 void cleanup(void){
-    int ret=close(socket_desc);
+    //FILLME join the threads (running = false;)
+
+    logger_verbose(__func__, "Joining UDP threads");
+    running = false;
+
+    int ret;
+
+    //TODO add error helper...
+    if(udp_threads_created){
+        ret = pthread_cancel(UDP_sender);
+        ret = pthread_cancel(UDP_receiver);
+        ret = pthread_join(UDP_sender, NULL);
+        ret = pthread_join(UDP_receiver, NULL);
+        pthread_attr_destroy(&attr1);
+        pthread_attr_destroy(&attr2);
+    }
+
+    //FILLME post quitPacket to Server
+    postQuitPacket();
+
+    //close both sockets
+    ret=close(socket_desc);
     ERROR_HELPER(ret,"Something went wrong closing TCP socket");
+    ret=close(socket_udp);
+    ERROR_HELPER(ret,"Something went wrong closing UDP socket");
+
+
+    //FILLME clean other stuff
+
+    // final cleanup
+    //destroy World
+    if(world_created){
+        WorldExtended_destroy(we);
+        //not needed anymore World_destroy(&world);
+        logger_verbose(__func__, "worldextended deleted");
+    }
+
+    Image_free(map_elevation);
+    Image_free(map_texture);
+    Image_free(my_texture);
 }
 
 /*
@@ -421,7 +480,7 @@ int main(int argc, char **argv) {
     }
 
     printf("loading texture image from %s ... ", argv[1]);
-    Image* my_texture = Image_load(argv[1]);
+    my_texture = Image_load(argv[1]);
     if (my_texture) {
         printf("Done! \n");
     } else {
@@ -446,8 +505,6 @@ int main(int argc, char **argv) {
 
 
 
-
-
     //fixme is this needed?
     Image* my_texture_for_server= my_texture;
 
@@ -460,15 +517,14 @@ int main(int argc, char **argv) {
     // these come from the server
 
 
-
     //let's create a TCP socket
     createTCPConnection(server_port);
 
     //and here we get from server all needed stuff to play
-    int my_id = getIdFromServer();
-    Image* map_elevation= getMapElevationFromServer();
-    Image* map_texture= getMapTextureFromServer();
-    ret = postVehicleTexture(my_texture_for_server, my_id);
+    my_id = getIdFromServer();
+    map_elevation= getMapElevationFromServer();
+    map_texture= getMapTextureFromServer();
+    ret = postVehicleTexture(my_texture_for_server);
     ERROR_HELPER(ret,"Cannot post my vehicle");
     Image* my_texture_from_server= getVehicleTexture(my_id);
 
@@ -476,6 +532,8 @@ int main(int argc, char **argv) {
     //not needed anymore World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
 
     we = WorldExtended_init(map_elevation, map_texture, 0.5, 0.5, 0.5);
+
+    world_created = true;
 
 
     vehicle=(Vehicle*) malloc(sizeof(Vehicle));
@@ -495,53 +553,24 @@ int main(int argc, char **argv) {
     createUDPConnection();
 
     //FILLME spawn both UDP sender/receiver threads.
-    pthread_t UDP_sender,UDP_receiver;
+
+    //handle cancellation threads
+
+    pthread_attr_init(&attr1);
+    pthread_attr_init(&attr2);
 
 
-    ret = pthread_create(&UDP_sender, NULL, UDPSenderThread, NULL);
+    ret = pthread_create(&UDP_sender, &attr1, UDPSenderThread, NULL);
     PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_sender");
     ret = pthread_create(&UDP_receiver, NULL, UDPReceiverThread, NULL);
     PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_receiver");
+
+    udp_threads_created = true;
 
 
     //here we can run the world and finally play
     WorldViewer_runGlobal(we->w, vehicle, &argc, argv);
 
-
-    //FILLME join the threads (running = false;)
-
-    logger_verbose(__func__, "Joining UDP threads");
-    running = false;
-
-
-    ret = pthread_join(UDP_sender,NULL);
-    PTHREAD_ERROR_HELPER(ret, "pthread_join on UDP_sender failed");
-    ret=pthread_join(UDP_receiver,NULL);
-    PTHREAD_ERROR_HELPER(ret, "pthread_join on UDP_receiver failed");
-
-
-    //FILLME post quitPacket to Server
-    postQuitPacket(my_id);
-
-    //close both sockets
-    ret=close(socket_desc);
-    ERROR_HELPER(ret,"Something went wrong closing TCP socket");
-    ret=close(socket_udp);
-    ERROR_HELPER(ret,"Something went wrong closing UDP socket");
-
-
-    //FILLME clean other stuff
-
-
-
-    // final cleanup
-    //destroy World
-    WorldExtended_destroy(we);
-    //not needed anymore World_destroy(&world);
-
-    Image_free(map_elevation);
-    Image_free(map_texture);
-    Image_free(my_texture);
-
+    cleanup();
     return 0;
 }
