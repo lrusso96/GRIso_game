@@ -45,15 +45,15 @@ typedef struct{
 
 int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
 
-  int msg_len = 0, bytes_left;
+  size_t msg_len;
   char img_packet_buffer[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
-  int ph_len = sizeof(PacketHeader);
+  int ip_len = sizeof(IdPacket);
 
   logger_verbose(__func__, "[Server] Waiting elevation surface request from client #%d.\n", client_id);
 
   //Receive map elevation request from client
-  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ph_len);
+  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive map elevation request from client.\n");
 
   /*
@@ -70,13 +70,13 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server] Bytes received : %d bytes.\n", msg_len);
+  logger_verbose(__func__, "[Server] Bytes received : %zu bytes.\n", msg_len);
 
-  PacketHeader* incoming_packet = (PacketHeader*) buf_rcv;
+  ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
 
-  logger_verbose(__func__, "[Server - Header Check] incoming_packet with : type\t%d\n size\t%d\n", incoming_packet->type, ph_len);
+  logger_verbose(__func__, "[Server - Header Check] incoming_packet with : type\t%d\nsize\t%d\n", incoming_packet->header.type, incoming_packet->header.size);
 
-  if(incoming_packet->type == GetElevation)
+  if(incoming_packet->header.type == GetElevation)
     logger_verbose(__func__, "[Server - Header Check] Passed.\n");
   else{
     logger_verbose(__func__, "[Server - Header Check] Failed.\n");
@@ -96,17 +96,14 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   img_packet_elevation_surface->id = 0;
   img_packet_elevation_surface->image = tcpArgs->surface_elevation;
 
-  logger_verbose(__func__, "[Server] img_packet_elevation_surface with :\ntype\t%d\n size\t%d\n", img_packet_elevation_surface->header.type, img_packet_elevation_surface->header.size);
+  logger_verbose(__func__, "[Server] img_packet_elevation_surface with :\ntype\t%d\nsize\t%d\n", img_packet_elevation_surface->header.type, img_packet_elevation_surface->header.size);
   logger_verbose(__func__, "[Server] Serialize img_packet_elevation_surface.\n");
 
   int img_packet_buffer_size = Packet_serialize(img_packet_buffer, &img_packet_elevation_surface->header);
 
   logger_verbose(__func__, "[Server] Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
-  //Send serialize header_elevation_surface to client
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, ph_len);
-  ERROR_HELPER(msg_len, "Can't send serialize elevation surface header to client.\n");
-
+ 
   /*
   while(msg_len < ph_len){
     ret = send(tcpArgs->client_socket, img_packet_buffer + msg_len, ph_len - msg_len, 0);
@@ -119,13 +116,9 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server - Header] Bytes sent : %d bytes.\n", msg_len);
-
   //Send serialize img_elevation_surface to client
-  bytes_left = img_packet_buffer_size - ph_len;
-
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer+ph_len, bytes_left);
-  ERROR_HELPER(msg_len, "Can't send serialize elevation surface image to client.\n");
+  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, img_packet_buffer_size);
+  ERROR_HELPER(msg_len, "Can't send serialize elevation surface package to client.\n");
 
   /*
   while(msg_len < bytes_left){
@@ -141,24 +134,23 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server - Data] Bytes sent : %d bytes.\n", msg_len);
+  logger_verbose(__func__, "[Server - Data] Bytes sent : %zu bytes.\n", msg_len);
   return 1;
 }
 
 int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
 
-  int bytes_left;
   size_t msg_len;
   char img_packet_buffer[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
-  size_t ph_len = sizeof(PacketHeader);
+  size_t ip_len = sizeof(IdPacket);
 
-  printf("ph_len : %zu.\n", ph_len);
+
 
   logger_verbose(__func__, "[Server] Waiting texture surface request from client #%d.\n", client_id);
 
   //Receive texture surface request from client
-  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ph_len);
+  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive texture surface request from client.\n");
   /*
   msg_len = 0;
@@ -174,12 +166,12 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server] Bytes received : %d bytes.\n", msg_len);
+  logger_verbose(__func__, "[Server] Bytes received : %zu bytes.\n", msg_len);
 
-  PacketHeader* incoming_packet = (PacketHeader*) buf_rcv;
-  logger_verbose(__func__, "[Server - Header Check] incoming_packet with :\ntype\t%d\nsize\t%d\n.",incoming_packet->type, incoming_packet->size);
+  ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
+  logger_verbose(__func__, "[Server - Header Check] incoming_packet with :\ntype\t%d\nsize\t%d\n.",incoming_packet->header.type, incoming_packet->header.size);
 
-  if(incoming_packet->type == GetTexture)
+  if(incoming_packet->header.type == GetTexture)
     logger_verbose(__func__, "[Server - Header Check] Passed.\n");
   else{
     logger_verbose(__func__, "[Server - Header Check] Failed.\n");
@@ -198,7 +190,7 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   img_packet_texture_surface->id = 0;
   img_packet_texture_surface->image = tcpArgs->surface_texture;
 
-  logger_verbose(__func__, "[Server] img_packet_texture_surface with :\ntype\t%d\n size\t%d\n", img_packet_texture_surface->header.type, img_packet_texture_surface->header.size);
+  logger_verbose(__func__, "[Server] img_packet_texture_surface with :\ntype\t%d\nsize\t%d\n", img_packet_texture_surface->header.type, img_packet_texture_surface->header.size);
 
   logger_verbose(__func__, "[Server] Serialize img_packet_texture_surface.\n");
 
@@ -206,10 +198,7 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
 
   logger_verbose(__func__, "[Server] Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
-  //Send serialize header_texture_surface to client
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, ph_len);
-  ERROR_HELPER(msg_len, "Can't send serialized texture surface to client.\n");
-
+  
   /*
   while(msg_len < ph_len){
     ret = send(tcpArgs->client_socket, img_packet_buffer + msg_len, ph_len-msg_len, 0);
@@ -222,13 +211,9 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server - Header Check] Bytes sent : %d bytes.\n", msg_len);
-
   //Send serialize img_texture_surface to client
-  bytes_left = img_packet_texture_surface->header.size - ph_len;
-
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer+ph_len, bytes_left);
-  ERROR_HELPER(msg_len, "Can't send serialized texture surface to client.\n");
+  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, img_packet_buffer_size);
+  ERROR_HELPER(msg_len, "Can't send serialized texture surface package to client.\n");
 
   /*
   while(msg_len < bytes_left){
@@ -243,7 +228,7 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   }
   */
 
-  logger_verbose(__func__, "[Server - Data] Bytes sent : %d bytes.\n", msg_len);
+  logger_verbose(__func__, "[Server - Data] Bytes sent : %zu bytes.\n", msg_len);
   return 1;
 }
 
@@ -396,7 +381,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
 
   IdPacket* id_packet = (IdPacket*) Packet_deserialize(id_packet_buffer, msg_len);
 
-  logger_verbose(__func__, "id_packet with : \ntype\t%d\n size\t%d\n id\t%d\n",
+  logger_verbose(__func__, "id_packet with : \ntype\t%d\nsize\t%d\nid\t%d\n",
 		 id_packet->header.type, id_packet->header.size, id_packet->id);
 
   //Check if client satisfied game protocol

@@ -105,23 +105,12 @@ int getIdFromServer(void){
     //Receive an id from server
     msg_len = griso_recv(socket_desc, id_packet_buffer, pi_len);
     ERROR_HELPER(msg_len, "Can't receive an id from server.\n");
-    /*
-    while(1){
-      msg_len = recv(socket_desc, id_packet_buffer, id_buffer_size, 0);
-      if(msg_len == -1){
-	if(errno == EINTR)
-	  continue;
-	ERROR_HELPER(msg_len, "Can't receive an id from server.\n");
-      }
-      break;
-    }
-    */
+    
     logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
     IdPacket* id_packet_deserialized = (IdPacket*)Packet_deserialize(id_packet_buffer, msg_len);
     int my_id = id_packet_deserialized->id;
-    //printf("id_packet with : \n type\t%d\n size\t%d\n id\t%d\n",
-    //id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
+    
     logger_verbose(__func__, "id_packet with : \n type\t%d\n size\t%d\n id\t%d",
 		   id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
 
@@ -138,14 +127,17 @@ Image* getMapElevationFromServer(void){
 
   char buf_send[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
-  ImagePacket* request = (ImagePacket*)malloc(sizeof(ImagePacket));
+  size_t msg_len;
   PacketHeader ph;
+  
   ph.type = GetElevation;
+
+  ImagePacket* request = (ImagePacket*) malloc(sizeof(ImagePacket));
   request->header = ph;
   request->id = -1;
-  int size = Packet_serialize(buf_send, &(request->header));
+
+  int size = Packet_serialize(buf_send, &request->header);
   if(size == -1) return NULL;
-  size_t msg_len;
 
   logger_verbose(__func__,"Sending elevation surface request to server.\n");
 
@@ -153,63 +145,37 @@ Image* getMapElevationFromServer(void){
   msg_len = griso_send(socket_desc, buf_send, size);
   ERROR_HELPER(msg_len, "Can't send map elevation request to server.\n");
 
-  /*
-    while(bytes_sent<size){
-    ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret,"Can't send MapElevation request");
-        if (ret==0) break;
-        bytes_sent+=ret;
-    }
-  */
-
   logger_verbose(__func__ , "Bytes sent : %d bytes.\n",msg_len);
   logger_verbose(__func__, "Receiving elevation surface from server.\n");
 
   //Receive header of map elevation post from server
-  int ph_len=sizeof(PacketHeader);
+  int ph_len = sizeof(PacketHeader);
 
   msg_len = griso_recv(socket_desc, buf_rcv, ph_len);
   ERROR_HELPER(msg_len, "Can't receive header of map elevation post from server.\n");
 
-  /*
-    while(msg_len<ph_len){
-        ret=recv(socket_desc, buf_rcv, ph_len, 0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret, "Cannot read from socket");
-        msg_len+=ret;
-    }
-  */
   logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
-  PacketHeader* incoming_pckt=(PacketHeader*)buf_rcv;
-  size=incoming_pckt->size-ph_len;
+  PacketHeader* incoming_pckt=(PacketHeader*) buf_rcv;
+  size = incoming_pckt->size-ph_len;
 
   //Receive leftovers of map elevation package from server
   msg_len = griso_recv(socket_desc, buf_rcv+ph_len, size);
   ERROR_HELPER(msg_len, "Can't receive leftovers of map elevation package from server.\n");
-  /*
-    while(msg_len<size){
-        ret=recv(socket_desc, buf_rcv+msg_len+ph_len, size-msg_len, 0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret, "Cannot read from socket");
-        msg_len+=ret;
-    }
-  */
 
-    ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
+  ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
 
-    logger_verbose(__func__, "Bytes received : %d bytes.\n",msg_len+ph_len);
-    logger_verbose(__func__, "Elevation package with :\ntype\t%d\nsize\t%d\nid\t%d\n",
-		   deserialized_packet->header.type, deserialized_packet->header.size,
-		   deserialized_packet->id);
-
-    //free && returns image
-    Packet_free(&(request->header));
-    Image* im=deserialized_packet->image;
-    free(deserialized_packet);
-    Image_save(im, "./images/client.pgm");
-    return im;
+  logger_verbose(__func__, "Bytes received : %d bytes.\n",msg_len);
+  logger_verbose(__func__, "Elevation package with :\ntype\t%d\nsize\t%d\nid\t%d\n",
+		 deserialized_packet->header.type, deserialized_packet->header.size,
+		 deserialized_packet->id);
+  
+  //free && returns image
+  Packet_free(&(request->header));
+  Image* im=deserialized_packet->image;
+  free(deserialized_packet);
+  Image_save(im, "./images/client.pgm");
+  return im;
 }
 
 /*
@@ -220,37 +186,25 @@ Image* getMapTextureFromServer(void){
 
     char buf_send[BUFFER_SIZE];
     char buf_rcv[BUFFER_SIZE];
+    size_t msg_len;
     PacketHeader ph;
-    ph.type = GetTexture;
 
-    int size_ph = Packet_serialize(buf_send, &ph);
-    printf("size_ph %d\n", size_ph);
-    printf("sizeof(type) : %zu.\n", sizeof(Type));
+    ph.type = GetTexture;
 
     ImagePacket* request = (ImagePacket*) malloc(sizeof(ImagePacket));
     request->header = ph;
     request->id = -1;
     int size = Packet_serialize(buf_send, &(request->header));
     if(size == -1) return NULL;
-    size_t msg_len;
 
     logger_verbose(__func__, "Sending map texture request to server.\n");
 
     //Sending map texture request to server
-    msg_len = griso_send(socket_desc, buf_send, size_ph);
+    msg_len = griso_send(socket_desc, buf_send, size);
     ERROR_HELPER(msg_len, "Can't send map texture request to server.\n");
 
-    /*
-    while(bytes_sent<size){
-        ret=send(socket_desc,buf_send+bytes_sent,size-bytes_sent,0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret,"Can't send MapTexture");
-        if (ret==0) break;
-        bytes_sent+=ret;
-    }
-    */
-
     logger_verbose(__func__, "Bytes sent : %d bytes.\n", msg_len);
+    logger_verbose(__func__, "Receving map texture from server.\n");
 
     //Receiving map texture header response from server
     int ph_len = sizeof(PacketHeader);
@@ -258,14 +212,6 @@ Image* getMapTextureFromServer(void){
     msg_len = griso_recv(socket_desc, buf_rcv, ph_len);
     ERROR_HELPER(msg_len, "Can't receive map texture header response from server.\n");
 
-    /*
-    while(msg_len<ph_len){
-        ret=recv(socket_desc, buf_rcv, ph_len, 0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret, "Cannot read from socket");
-        msg_len+=ret;
-    }
-    */
     logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
     PacketHeader* incoming_pckt = (PacketHeader*)buf_rcv;
@@ -274,19 +220,11 @@ Image* getMapTextureFromServer(void){
     //Receiving leftovers of map texture package from server
     msg_len = griso_recv(socket_desc, buf_rcv+ph_len, size);
     ERROR_HELPER(msg_len, "Can't receiving leftovers of map texture package from server.\n");
-    /*
-    while(msg_len<size){
-        ret=recv(socket_desc, buf_rcv+msg_len+ph_len, size-msg_len, 0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret, "Cannot read from socket");
-        msg_len+=ret;
-    }
-    */
-
+    
     logger_verbose(__func__, "Bytes received : %d bytes.",msg_len);
 
     ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-
+    
     logger_verbose(__func__, "Texture packet with :\n type\t%d\n size\t%d\n id\t%d\n",
 		   deserialized_packet->header.type, deserialized_packet->header.size,
 		   deserialized_packet->id);
@@ -294,10 +232,9 @@ Image* getMapTextureFromServer(void){
     //free
     Packet_free(&request->header);
     Image* im = deserialized_packet->image;
-    Image_save(im, "client_texture.ppm");
+    Image_save(im, "./images/client_texture.ppm");
     free(deserialized_packet);
     return im;
-
 }
 
 /*
