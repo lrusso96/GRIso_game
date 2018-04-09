@@ -6,5 +6,5 @@
 // This will block the program, and terminate when pressing esc on the viewport
 void WorldViewer_runGlobal(World* world,
 			   Vehicle* self,
-			   int* argc, char** argv);
+			   int* argc, char** argv, void(*fun) (void));
 

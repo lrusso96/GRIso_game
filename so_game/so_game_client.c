@@ -422,7 +422,8 @@ void* UDPSenderThread(void* args){
         WorldExtended_vehicleUpdatePacket_init(we, vpckt, vehicle);
 
         int size = Packet_serialize(buf_send,&(vpckt->header));
-        logger_verbose(__func__, "Sending updating packet of %d bytes",size);
+        logger_verbose(__func__, "Sending updating packet of %d bytes\n\tid = %d\n\tx = %fn\ty = %fn\ttheta = %f",size,
+        vpckt->id, vpckt->x, vpckt->y, vpckt->theta);
 
         int sent = sendto(socket_udp, buf_send, size, 0, (struct sockaddr *) &udp_server, sizeof(udp_server));
         if(sent<0)
@@ -432,12 +433,21 @@ void* UDPSenderThread(void* args){
         }
 
         //todo decide sleeping time
-        usleep(500000);
+        usleep(5000000);
 
     }
 
     return NULL;
 }
+
+
+void applyUpdates(WorldUpdatePacket* wup){
+    //fillme
+
+    //free packet
+    Packet_free(&(wup->header));
+}
+
 
 /*
  * This thread receives only vehicleUpdatePackets from server
@@ -449,8 +459,27 @@ void* UDPReceiverThread(void* args){
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
+    char buf_recv[BUFFER_SIZE];
+
     while(running){
         usleep(500000);
+
+        int nBytes = recvfrom(socket_udp, buf_recv, BUFFER_SIZE, 0, NULL, NULL);
+        logger_verbose(__func__, "received %d bytes", nBytes);
+
+        PacketHeader* ph=(PacketHeader*)buf_recv;
+
+        if(ph->size!=nBytes){
+            logger_error(__func__, "Partial UDP packet arrived, I'm ignoring it");
+            continue;
+        }
+
+        if(ph->type == WorldUpdate){
+            WorldUpdatePacket* wup = (WorldUpdatePacket*) Packet_deserialize(buf_recv, nBytes);
+            logger_verbose(__func__, "WorldUpdate epoch %lu", wup->epoch);
+            applyUpdates(wup);
+            continue;
+        }
     }
 
     return NULL;
@@ -502,7 +531,8 @@ void cleanup(void){
     //and free images
     Image_free(map_elevation);
     Image_free(map_texture);
-    Image_free(my_texture);
+
+    logger_verbose(__func__, "cleanup completed");
 }
 
 /*
@@ -607,6 +637,7 @@ int main(int argc, char **argv) {
     pthread_attr_init(&attr1);
     pthread_attr_init(&attr2);
 
+    running = true;
     ret = pthread_create(&UDP_sender, &attr1, UDPSenderThread, NULL);
     PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_sender");
     ret = pthread_create(&UDP_receiver, NULL, UDPReceiverThread, NULL);
@@ -616,7 +647,7 @@ int main(int argc, char **argv) {
     udp_threads_created = true;
 
     //here we can run the world and finally play
-    WorldViewer_runGlobal(we->w, vehicle, &argc, argv);
+    WorldViewer_runGlobal(we->w, vehicle, &argc, argv, cleanup);
 
     //after exit we cleanup and close
     cleanup();

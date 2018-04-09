@@ -1,30 +1,32 @@
+#include <arpa/inet.h>
+#include <assert.h>
+#include <errno.h>
 #include <math.h>
-#include <stdlib.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <assert.h>
 #include <signal.h>
-#include <errno.h>
-#include <pthread.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
 #include <sys/socket.h>
 
+#include "grisonet.h"
 #include "image.h"
+#include "logger.h"
+#include "random_id.h"
+#include "so_game_protocol.h"
 #include "surface.h"
+#include "utils.h"
 #include "vehicle.h"
 #include "world.h"
 #include "world_viewer.h"
-#include "logger.h"
 #include "world_server.h"
-#include "so_game_protocol.h"
-#include "utils.h"
-#include "logger.h"
-#include "grisonet.h"
-#include "random_id.h"
 
-int is_up = 0;
+
+
+bool is_up = false;
 
 //GLOBAL
 
@@ -271,8 +273,6 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
 }
 
 
-
-
 int getIdFromClient(TCPArgs* tcpArgs){
 
   char id_packet_buffer[BUFFER_SIZE];
@@ -402,7 +402,7 @@ void createTCPConnection(TCPArgs* tcpArgs){
   ret = listen(server_desc, MAX_CONNECTIONS);
   ERROR_HELPER(ret, "Can't listen on server desc.\n");
 
-  is_up = 1;
+  is_up = true;
 
   logger_verbose(__func__, "[Server] TCP socket successfully created.\n");
 }
@@ -417,6 +417,11 @@ void createUDPConnection(UDPArgs* udpArgs){
   udpArgs->server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
   udpArgs->server_addr.sin_family = AF_INET;
   udpArgs->server_addr.sin_port = udp_port_number;
+
+  memset(udpArgs->server_addr.sin_zero, '\0', sizeof udpArgs->server_addr.sin_zero);
+
+   /*Bind socket with address struct*/
+  bind(udpArgs->server_desc, (struct sockaddr *) &(udpArgs->server_addr), sizeof(udpArgs->server_addr));
 
   logger_verbose(__func__, "UDP socket successfully created");
 }
@@ -435,7 +440,24 @@ void* UDPSenderThread(void* args){
  * until running is true (set it to false to stop it)
  */
 void* UDPReceiverThread(void* args){
+
+    char buf_recv[BUFFER_SIZE];
+
+    UDPArgs* udpArgs = (UDPArgs*) args;
+    int udpSocket = udpArgs->server_desc;
+
+    struct sockaddr_storage serverStorage;
+    socklen_t addr_size = sizeof(serverStorage);
+
+
     while(is_up){
+        int nBytes = recvfrom(udpSocket, buf_recv, BUFFER_SIZE, 0, (struct sockaddr *)&serverStorage, &addr_size);
+        logger_verbose(__func__, "received %d bytes", nBytes);
+
+        VehicleUpdatePacket* v_packet = (VehicleUpdatePacket*) Packet_deserialize(buf_recv, nBytes);
+
+        logger_verbose(__func__, "packet received:\n\ttype = %d\n\tsize = %d\n\tid = %d\n\tx = %fn\ty = %fn\ttheta = %f",
+		 v_packet->header.type, v_packet->header.size, v_packet->id, v_packet->x, v_packet->y, v_packet->theta);
         sleep(1);
     }
     return NULL;
@@ -463,46 +485,36 @@ void* TCPConnectionCheck(void* params){
 }
 
 
-
+//TODO handle multi clients
 void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
 
-  int ret;
+    int ret;
 
-  while(is_up){
-    tcpArgs->client_socket = accept(server_desc, (struct sockaddr*) tcpArgs->client_addr, (socklen_t*)&(tcpArgs->sockaddr_len));
-    ERROR_HELPER(tcpArgs->client_socket, "Can't accept incoming connection.\n");
+     //,  UDP_sender_thread, UDP_receiver_thread, TCP_connection_check;
+    pthread_t UDP_receiver_thread;
 
-    printf("Incoming connection accepted.\n");
 
-    pthread_t TCP_thread; //,  UDP_sender_thread, UDP_receiver_thread, TCP_connection_check;
 
-    ret = pthread_create(&TCP_thread, NULL, TCPWork, (void*)tcpArgs);
-    ERROR_HELPER(ret, "Can't create TCP_thread.\n");
-
-    /*
-    ret = pthread_create(&UDP_sender_thread, NULL, UDPSenderThread, NULL);
-    ERROR_HELPER(ret, "Can't create UDP sender thread.\n");
-
-    ret = pthread_create(&UDP_receiver_thread, NULL, UDPReceiverThread, NULL);
+    ret = pthread_create(&UDP_receiver_thread, NULL, UDPReceiverThread, (void*)udpArgs);
     ERROR_HELPER(ret, "Can't create UDP receiver thread.\n");
 
-    ret = pthread_create(&TCP_connection_check, NULL, TCPConnectionCheck, (void*)tcpArgs);
 
-    */
-    ret = pthread_join(TCP_thread, NULL);
-    ERROR_HELPER(ret, "Can't join TCP_thread.\n");
+    while(is_up){
+        tcpArgs->client_socket = accept(server_desc, (struct sockaddr*) tcpArgs->client_addr, (socklen_t*)&(tcpArgs->sockaddr_len));
+        ERROR_HELPER(tcpArgs->client_socket, "Can't accept incoming connection.\n");
 
-    /*
-    ret = pthread_join(UDP_sender_thread, NULL);
-    ERROR_HELPER(ret, "Can't join UDP sender thread.\n");
+        printf("Incoming connection accepted.\n");
+
+        pthread_t TCP_thread;
+        ret = pthread_create(&TCP_thread, NULL, TCPWork, (void*)tcpArgs);
+    ERROR_HELPER(ret, "Can't create TCP_thread.\n");
+    }
+
+    /*ret = pthread_join(TCP_thread, NULL);
+    ERROR_HELPER(ret, "Can't join TCP_thread.\n");*/
 
     ret = pthread_join(UDP_receiver_thread, NULL);
     ERROR_HELPER(ret, "Can't join UDP receiver thread.\n");
-
-    ret = pthread_join(TCP_connection_check, NULL);
-    ERROR_HELPER(ret, "Can't join TCP connection check thread.\n");
-    */
-  }
 
 }
 

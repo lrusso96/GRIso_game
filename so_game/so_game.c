@@ -82,14 +82,14 @@ int main(int argc, char **argv) {
     .run=1,
     .world=&world
   };
-  
+
   pthread_attr_init(&runner_attrs);
   pthread_create(&runner_thread, &runner_attrs, updater_thread, &runner_args);
-  WorldViewer_runGlobal(&world, vehicle, &argc, argv);
+  WorldViewer_runGlobal(&world, vehicle, &argc, argv, NULL);    //just to make it compile
   runner_args.run=0;
   void* retval;
   pthread_join(runner_thread, &retval);
-  
+
   // check out the images not needed anymore
   Image_free(vehicle_texture);
   Image_free(surface_texture);
@@ -97,5 +97,5 @@ int main(int argc, char **argv) {
 
   // cleanup
   World_destroy(&world);
-  return 0;             
+  return 0;
 }
