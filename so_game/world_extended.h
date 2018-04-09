@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdbool.h>
+
 #include "so_game_protocol.h"
 #include "world.h"
 
@@ -16,6 +18,11 @@ typedef struct WorldExtended {
 
     //cached stuff
     int online_users;
+
+    int max_id;
+    bool* ids;
+    bool* with_texture;
+
 } WorldExtended;
 
 WorldExtended* WorldExtended_init(Image* surface_elevation,
@@ -48,7 +55,7 @@ void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float*
 void WorldExtended_vehicleUpdatePacket_init(WorldExtended* we, VehicleUpdatePacket*, Vehicle* v);
 
 
-
+int WorldExtended_HasIdAndTexture(WorldExtended* we, int id);
 
 
 

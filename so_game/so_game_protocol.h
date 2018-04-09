@@ -10,7 +10,7 @@ typedef enum {
   PostElevation=0x5,
   WorldUpdate=0x6,
   VehicleUpdate=0x7,
-  Quit=0x8              //use this in IDPacket
+  Quit=0x8              //use this in IDPacket: client to server to notify disconnection. server to client to notify client id's disconnection
 } Type;
 
 typedef struct {

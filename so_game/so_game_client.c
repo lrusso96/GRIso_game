@@ -301,7 +301,7 @@ int postVehicleTexture(Image* texture, int id){
  * get vehicle texture of user "id" from server
  * @return the texture
  */
-void getVehicleTexture(int id){
+Image* getVehicleTexture(int id){
 
     char buf_send[BUFFER_SIZE];
     char buf_rcv[BUFFER_SIZE];
@@ -318,7 +318,8 @@ void getVehicleTexture(int id){
     request->id = id;
 
     int size = Packet_serialize(buf_send, &(request->header));
-    if(size == -1) return;
+    if(size == -1)
+        return NULL;
 
     msg_len = griso_send(socket_desc, buf_send, size);
     ERROR_HELPER(msg_len, "Can't send player texture request to server.\n");
@@ -347,10 +348,12 @@ void getVehicleTexture(int id){
 		   deserialized_packet->header.type, deserialized_packet->header.size,
 		   deserialized_packet->id);
 
-    my_texture = deserialized_packet->image;
+    Image* im = deserialized_packet->image;
 
     //Image_save(im, "./images/player_texture.ppm");
     free(deserialized_packet);
+
+    return im;
 }
 
 
@@ -444,6 +447,30 @@ void* UDPSenderThread(void* args){
 void applyUpdates(WorldUpdatePacket* wup){
     //fillme
 
+    for(int i= 0; i<wup->num_vehicles; i++){
+        ClientUpdate cu = wup->updates[i];
+
+        int id = cu.id;
+        //skip my id !
+        if(id == my_id)
+            continue;
+
+        int val = WorldExtended_HasIdAndTexture(we, id);
+        if(val==-1){
+            logger_verbose(__func__, "vehicle with id %d joined the game", id);
+            //getVehicleTexture(
+        }
+        if(val == 0){
+            logger_verbose(__func__, "updating vehicle with id %d", id);
+            //setxyt for that vehicle
+        }
+
+
+        //check if it is already in the world
+        //if yes, update its poisiton
+        //if not, request his texture and add to world
+    }
+
     //free packet
     Packet_free(&(wup->header));
 }
@@ -478,6 +505,14 @@ void* UDPReceiverThread(void* args){
             WorldUpdatePacket* wup = (WorldUpdatePacket*) Packet_deserialize(buf_recv, nBytes);
             logger_verbose(__func__, "WorldUpdate epoch %lu", wup->epoch);
             applyUpdates(wup);
+            continue;
+        }
+        if(ph->type == Quit){
+            IdPacket* ip = (IdPacket*) Packet_deserialize(buf_recv, nBytes);
+            int id = ip->id;
+            logger_verbose(__func__, "Vehicle %d disconnected. I detach it from my world", id);
+            int id_ret = WorldExtended_detachVehicle(we, id);
+            logger_verbose(__func__, "Detached vehicle %d", id_ret);
             continue;
         }
     }
@@ -607,7 +642,7 @@ int main(int argc, char **argv) {
     getMapTextureFromServer();
     ret = postVehicleTexture(my_texture_for_server, my_id);
     ERROR_HELPER(ret,"Cannot post my vehicle");
-    getVehicleTexture(my_id);
+    my_texture = getVehicleTexture(my_id);
 
     // construct the world...
     we = WorldExtended_init(map_elevation, map_texture, 0.5, 0.5, 0.5);

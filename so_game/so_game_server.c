@@ -430,7 +430,7 @@ void createUDPConnection(UDPArgs* udpArgs){
 
 void* UDPSenderThread(void* args){
     while(is_up){
-      sleep(1);
+      sleep(5);
     }
     return NULL;
 }

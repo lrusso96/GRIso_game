@@ -18,6 +18,10 @@ WorldExtended* WorldExtended_init(Image* surface_elevation,
     we->w = (World*) malloc(sizeof(World));
     World_init(we->w, surface_elevation, surface_texture, x_step, y_step, z_step);
     we->online_users = 0;
+
+    we->max_id = 128;
+    we->ids = (bool*) calloc(128, sizeof(bool));
+    we->with_texture = (bool*) calloc(128, sizeof(bool));
     return we;
 
 }
@@ -36,6 +40,8 @@ void WorldExtended_destroy(WorldExtended* we){
     //when world is empty
     World_destroy(we->w);
     free(we->w);
+    free(we->ids);
+    free(we->with_texture);
     free(we);
 }
 
@@ -43,6 +49,16 @@ int WorldExtended_addVehicle(WorldExtended* we, Vehicle* v){
     World_addVehicle(we->w, v);
     int s = we->w->vehicles.size;
     we->online_users = s;
+    int m = we->max_id;
+    int id = v->id;
+    if(id>m){
+        we->ids = realloc(we->ids, m*2);
+        we->with_texture = realloc(we->with_texture, m*2);
+    }
+
+    we->ids[id] = true;
+    we->with_texture[id] = true;
+
     return s;
 }
 
@@ -54,6 +70,8 @@ int WorldExtended_detachVehicle(WorldExtended* we, int id){
     }
     int s = we->online_users = we->w->vehicles.size;
     we->online_users = s;
+    we->ids[id] = false;
+    we->with_texture[id] = false;
     return s;
 }
 
@@ -153,7 +171,13 @@ void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float*
 }
 
 
-
+int WorldExtended_HasIdAndTexture(WorldExtended* we, int id){
+    if(we->max_id < id)
+        return -1;
+    if(we->ids[id] == true && we->ids == false)
+        return 0;
+    return 1;
+}
 
 
 
