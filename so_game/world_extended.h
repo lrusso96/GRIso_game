@@ -1,5 +1,6 @@
 #pragma once
 
+#include "so_game_protocol.h"
 #include "world.h"
 
 /*
@@ -42,3 +43,17 @@ void WorldExtended_getVehicleForcesUpdate(WorldExtended* we, Vehicle* v, float* 
 void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float* y, float* t);
 
 //todo setXYT
+
+
+void WorldExtended_vehicleUpdatePacket_init(WorldExtended* we, VehicleUpdatePacket*, Vehicle* v);
+
+
+
+
+
+
+
+
+
+
+

@@ -70,6 +70,36 @@ void WorldExtended_print(WorldExtended* we){
 }
 
 
+void WorldExtended_vehicleUpdatePacket_init(WorldExtended* we, VehicleUpdatePacket* p, Vehicle* v){
+
+    int ret;
+    ListHead* lh = &(we->w->vehicles);
+    //we need to do this in critical section!
+    ret = sem_wait(&(lh->sem));
+    ERROR_HELPER(ret, "sem_wait failed");
+
+    ListItem* item = lh->first;
+    while(item){
+        Vehicle* vv = (Vehicle*)item;
+
+        if(vv==v){
+            p->rotational_force = v->rotational_force;
+            p->translational_force = v->translational_force;
+            p->x = v->x;
+            p->y = v->y;
+            p->theta = v->theta;
+            ret = sem_post(&(lh->sem));
+            ERROR_HELPER(ret, "sem_post failed");
+            return;
+        }
+        item=item->next;
+    }
+    ret = sem_post(&(lh->sem));
+    ERROR_HELPER(ret, "sem_post failed");
+
+}
+
+
 void WorldExtended_getVehicleForcesUpdate(WorldExtended* we, Vehicle* v, float* tf, float* rf){
 
     int ret;

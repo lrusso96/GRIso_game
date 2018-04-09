@@ -70,6 +70,7 @@ int window;
 
 
 
+
 //----------TCP functions---------------------------------------------->
 
 
@@ -404,9 +405,35 @@ void* UDPSenderThread(void* args){
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
+    //this is scalar (not global epoch sent by server)
+    unsigned long req_number = 1;
+
+    char buf_send[BUFFER_SIZE];
+    VehicleUpdatePacket* vpckt=(VehicleUpdatePacket*)malloc(sizeof(VehicleUpdatePacket));
+    PacketHeader ph;
+    ph.type=VehicleUpdate;
+    vpckt->id = my_id;
+    vpckt->header = ph;
+
     while(running){
-        sleep(10);
-        printf("...");
+        vpckt->req_number = req_number++;
+
+        //done in mutual exclusion
+        WorldExtended_vehicleUpdatePacket_init(we, vpckt, vehicle);
+
+        int size = Packet_serialize(buf_send,&(vpckt->header));
+        logger_verbose(__func__, "Sending updating packet of %d bytes",size);
+
+        int sent = sendto(socket_udp, buf_send, size, 0, (struct sockaddr *) &udp_server, sizeof(udp_server));
+        if(sent<0)
+            logger_error(__func__, "Update packet NOT sent successfully");
+        else{
+            logger_verbose(__func__, "Update packet successfully sent");
+        }
+
+        //todo decide sleeping time
+        usleep(500000);
+
     }
 
     return NULL;
@@ -423,7 +450,7 @@ void* UDPReceiverThread(void* args){
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
     while(running){
-        sleep(10);
+        usleep(500000);
     }
 
     return NULL;
