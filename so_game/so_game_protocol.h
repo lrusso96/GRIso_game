@@ -51,6 +51,10 @@ typedef struct {
   int id;
   float rotational_force;
   float translational_force;
+  float x;
+  float y;
+  float theta;
+  unsigned long req_number;     //scalar clock per client
 } VehicleUpdatePacket;
 
 // block of the client updates, id of vehicle
@@ -67,6 +71,7 @@ typedef struct {
 typedef struct {
   PacketHeader header;
   int num_vehicles;
+  unsigned long epoch;      //global epoch of the update (!=req_number)
   ClientUpdate* updates;
 } WorldUpdatePacket;
 

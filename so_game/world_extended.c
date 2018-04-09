@@ -24,6 +24,7 @@ WorldExtended* WorldExtended_init(Image* surface_elevation,
 void WorldExtended_destroy(WorldExtended* we){
 
     World* w = we->w;
+
     ListItem* item=w->vehicles.first;
     while(item){
         Vehicle* v=(Vehicle*)item;
@@ -31,7 +32,6 @@ void WorldExtended_destroy(WorldExtended* we){
         WorldExtended_detachVehicle(we, v->id);
 
   }
-
 
     //when world is empty
     World_destroy(we->w);

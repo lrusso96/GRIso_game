@@ -21,46 +21,61 @@
 #include "vehicle.h"
 #include "world_extended.h"
 #include "world_viewer.h"
-#include "logger.h"
 
+
+//----------global variables------------------------------------------->
+
+bool running = false;
 
 /*
- * global variables
+ * Socket descriptors (TCP & UDP)
  */
-
-int window;
-Vehicle* vehicle; // The vehicle
-
-int socket_desc;
-int socket_udp;
+int socket_desc, socket_udp;
 struct sockaddr_in udp_server;
-//wrapper of World
+
+/*
+ * Threads stuff
+ */
+pthread_t UDP_sender, UDP_receiver;
+pthread_attr_t attr1, attr2;
+bool udp_threads_created = false;
+
+/*
+ * Wrapper of World (local copy)
+ */
 WorldExtended* we;
 bool world_created = false;
 
-//images
+/*
+ * Textures
+ */
 Image* map_elevation;
 Image* map_texture;
 Image* my_texture;
 
+/*
+ * My global id
+ */
 int my_id;
 
-bool running = false;
-
-bool udp_threads_created = false;
-pthread_t UDP_sender, UDP_receiver;
-pthread_attr_t attr1, attr2;
-
-//--------------------------------------->
+/*
+ * My own Vehicle
+ */
+Vehicle* vehicle;
 
 /*
- * TCP functions
+ * Window
  */
+int window;
+
+
+
+//----------TCP functions---------------------------------------------->
 
 
 /*
  * Create TCP connection
- * the return value is assigned to socket_desc global variable
+ * @return value is assigned to socket_desc global variable
  */
 void createTCPConnection(int server_port){
     int ret;
@@ -82,12 +97,11 @@ void createTCPConnection(int server_port){
     logger_verbose(__func__, "Connection established..\n");
 }
 
-
 /*
  * get ID from Server
  * @return the id (int)
  */
-int getIdFromServer(void){
+void getIdFromServer(void){
     char id_packet_buffer[BUFFER_SIZE];
     size_t pi_len = sizeof(IdPacket);
     size_t msg_len;
@@ -98,8 +112,6 @@ int getIdFromServer(void){
     IdPacket* id_packet = (IdPacket*)malloc(sizeof(IdPacket));
     id_packet->header = id_header;
     id_packet->id = -1;  //id = -1 to ask an id
-
-
 
     int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
 
@@ -123,27 +135,27 @@ int getIdFromServer(void){
     logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
 
     IdPacket* id_packet_deserialized = (IdPacket*)Packet_deserialize(id_packet_buffer, msg_len);
-    int my_id = id_packet_deserialized->id;
+
+    //return value (global side effect)
+    my_id = id_packet_deserialized->id;
 
     logger_verbose(__func__, "id_packet with : \ntype\t%d\nsize\t%d\nid\t%d",
 		   id_packet_deserialized->header.type, id_packet_deserialized->header.size, id_packet_deserialized->id);
 
     //Free id_packet
     Packet_free(&id_packet_deserialized->header);
-    return my_id;
 }
 
 /*
  * get Elevation map from Server
  * @return the map (Image*)
  */
-Image* getMapElevationFromServer(void){
+void getMapElevationFromServer(void){
 
   char buf_send[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
   size_t msg_len;
   PacketHeader ph;
-
   ph.type = GetElevation;
 
   ImagePacket* request = (ImagePacket*) malloc(sizeof(ImagePacket));
@@ -151,7 +163,7 @@ Image* getMapElevationFromServer(void){
   request->id = -1;
 
   int size = Packet_serialize(buf_send, &request->header);
-  if(size == -1) return NULL;
+  if(size == -1) return;
 
   logger_verbose(__func__,"Sending elevation surface request to server.\n");
 
@@ -186,17 +198,19 @@ Image* getMapElevationFromServer(void){
 
   //free && returns image
   Packet_free(&(request->header));
-  Image* im=deserialized_packet->image;
+
+    //return value (global side effect)
+  map_elevation = deserialized_packet->image;
+
   free(deserialized_packet);
   //Image_save(im, "./images/client_surface.pgm");
-  return im;
 }
 
 /*
  * get Texture map from Server
  * @return the map (Image*)
  */
-Image* getMapTextureFromServer(void){
+void getMapTextureFromServer(void){
 
     char buf_send[BUFFER_SIZE];
     char buf_rcv[BUFFER_SIZE];
@@ -209,7 +223,7 @@ Image* getMapTextureFromServer(void){
     request->header = ph;
     request->id = -1;
     int size = Packet_serialize(buf_send, &(request->header));
-    if(size == -1) return NULL;
+    if(size == -1) return;
 
     logger_verbose(__func__, "Sending map texture request to server.\n");
 
@@ -245,10 +259,12 @@ Image* getMapTextureFromServer(void){
 
     //free
     Packet_free(&request->header);
-    Image* im = deserialized_packet->image;
+
+    //return value (global side effect)
+    map_texture=  deserialized_packet->image;
+
     //Image_save(im, "./images/client_texture.ppm");
     free(deserialized_packet);
-    return im;
 }
 
 /*
@@ -271,7 +287,7 @@ int postVehicleTexture(Image* texture, int id){
 
     int size = Packet_serialize(buf_send, &(request->header));
     if(size == -1) return -1;
-    
+
     //Send vehicle texture to server
     msg_len = griso_send(socket_desc, buf_send, size);
     ERROR_HELPER(msg_len, "Can't send vehicle texture to server.\n");
@@ -284,87 +300,80 @@ int postVehicleTexture(Image* texture, int id){
  * get vehicle texture of user "id" from server
  * @return the texture
  */
-Image* getVehicleTexture(int id){
+void getVehicleTexture(int id){
 
     char buf_send[BUFFER_SIZE];
     char buf_rcv[BUFFER_SIZE];
-   
+
     ImagePacket* request = (ImagePacket*)malloc(sizeof(ImagePacket));
     PacketHeader ph;
     size_t msg_len;
     size_t ip_len = sizeof(ImagePacket);
 
     logger_verbose(__func__, "Sending player texture request to server.\n");
-    
+
     ph.type = GetTexture;
     request->header = ph;
     request->id = id;
-    
+
     int size = Packet_serialize(buf_send, &(request->header));
-    if(size == -1) return NULL;
+    if(size == -1) return;
 
     msg_len = griso_send(socket_desc, buf_send, size);
     ERROR_HELPER(msg_len, "Can't send player texture request to server.\n");
 
     logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
-  
+
     Packet_free(&(request->header));
-    
+
     //Receiving player texture from server
     msg_len = griso_recv(socket_desc, buf_rcv, ip_len);
     ERROR_HELPER(msg_len, "Can't receive player texture header from server.\n");
-    
+
     logger_verbose(__func__, "Bytes received : %zu.\n", msg_len);
-    
+
     ImagePacket* incoming_packet = (ImagePacket*) buf_rcv;
     size = incoming_packet->header.size - ip_len;
 
     msg_len = griso_recv(socket_desc, buf_rcv+ip_len, size);
     ERROR_HELPER(msg_len, "Can't receive player texture package from server.\n");
-    
+
     logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
-    
+
     ImagePacket* deserialized_packet = (ImagePacket*) Packet_deserialize(buf_rcv, msg_len+ip_len);
 
     logger_verbose(__func__, "deserialized_packet with : \ntype\t%d\nsize\t%d\nid\t%d\n",
 		   deserialized_packet->header.type, deserialized_packet->header.size,
 		   deserialized_packet->id);
 
-    Image* im = deserialized_packet->image;
+    my_texture = deserialized_packet->image;
 
     //Image_save(im, "./images/player_texture.ppm");
     free(deserialized_packet);
-    return im;
 }
 
 
 /*
  * notify server that the client "id" (me!) is quitting
  */
-int postQuitPacket(void){
+void postQuitPacket(void){
     char buf_send[BUFFER_SIZE];
     IdPacket* idpckt=(IdPacket*)malloc(sizeof(IdPacket));
     PacketHeader ph;
     ph.type=Quit;
     idpckt->id = my_id;
-    idpckt->header=ph;
-    int size=Packet_serialize(buf_send,&(idpckt->header));
-    logger_verbose(__func__, "Sending quit packet of %d bytes",size);
-    int msg_len=0;
-    while(msg_len<size){
-        int ret=send(socket_desc,buf_send+msg_len,size-msg_len,0);
-        if (ret==-1 && errno==EINTR) continue;
-        ERROR_HELPER(ret,"Can't send quit packet");
-        if (ret==0) break;
-        msg_len+=ret;
-    }
-    logger_verbose(__func__, "Quit packet was successfully sent");
-    return 0;
+    idpckt->header = ph;
 
+    int size = Packet_serialize(buf_send,&(idpckt->header));
+    logger_verbose(__func__, "Sending quit packet of %d bytes",size);
+    int msg_len = griso_send(socket_desc, buf_send, size);
+    ERROR_HELPER(msg_len, "Can't send id request to server.\n");
+
+    logger_verbose(__func__, "Quit packet was successfully sent");
 }
 
 
-//------------- UDP stuff -------------------------->
+//----------UDP stuff-------------------------------------------------->
 
 
 /*
@@ -390,6 +399,8 @@ void createUDPConnection(void){
  * until running is true (set it to false to stop it)
  */
 void* UDPSenderThread(void* args){
+
+    //enable asynchronous pthread_cancel from cleanup
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
@@ -397,8 +408,6 @@ void* UDPSenderThread(void* args){
         sleep(10);
         printf("...");
     }
-
-    printf("fine 1");
 
     return NULL;
 }
@@ -408,36 +417,44 @@ void* UDPSenderThread(void* args){
  * until running is true (set it to false to stop it)
  */
 void* UDPReceiverThread(void* args){
+
+    //enable asynchronous pthread_cancel from cleanup
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
     while(running){
         sleep(10);
     }
+
     return NULL;
 }
 
-//--------------------------------------->
+//----------CLEANUP && SIGNALS----------------------------------------->
 
 
 void cleanup(void){
-    //FILLME join the threads (running = false;)
-
-    logger_verbose(__func__, "Joining UDP threads");
-    running = false;
-
     int ret;
 
-    //TODO add error helper...
+    //set global bool to false
+    running = false;
+
+    //join the threads if created!
     if(udp_threads_created){
+        logger_verbose(__func__, "Joining UDP threads");
         ret = pthread_cancel(UDP_sender);
+        ERROR_HELPER(ret, "pthread_cancel on UDP_sender failed");
         ret = pthread_cancel(UDP_receiver);
+        ERROR_HELPER(ret, "pthread_cancel on UDP_receiver failed");
         ret = pthread_join(UDP_sender, NULL);
+        ERROR_HELPER(ret, "pthread_join on UDP_sender failed");
         ret = pthread_join(UDP_receiver, NULL);
+        ERROR_HELPER(ret, "pthread_join on UDP_receiver failed");
         pthread_attr_destroy(&attr1);
         pthread_attr_destroy(&attr2);
+        logger_verbose(__func__, "successful join on udp threads");
     }
 
-    //FILLME post quitPacket to Server
+    //post quitPacket to Server
     postQuitPacket();
 
     //close both sockets
@@ -446,24 +463,25 @@ void cleanup(void){
     ret=close(socket_udp);
     ERROR_HELPER(ret,"Something went wrong closing UDP socket");
 
-
-    //FILLME clean other stuff
+    logger_verbose(__func__, "sockets were closed successfully");
 
     // final cleanup
-    //destroy World
+    //destroy World if created!
     if(world_created){
         WorldExtended_destroy(we);
-        //not needed anymore World_destroy(&world);
         logger_verbose(__func__, "worldextended deleted");
     }
 
+    //and free images
     Image_free(map_elevation);
     Image_free(map_texture);
     Image_free(my_texture);
 }
 
 /*
- * Signal Handling
+ * Signal Handling function
+ *
+ * if SIGINT is recevied, we call cleanup and close
  */
 void signalHandler(int signal){
     switch (signal) {
@@ -474,12 +492,13 @@ void signalHandler(int signal){
             cleanup();
             break;
         default:
-            fprintf(stderr, "Uncaught signal: %d\n", signal);
+            logger_error(__func__, "Uncaught signo: %d\n", signal);
             return;
     }
 }
 
-//--------------------------------------->
+
+//----------MAIN------------------------------------------------------->
 
 int main(int argc, char **argv) {
     if (argc<3) {
@@ -512,7 +531,6 @@ int main(int argc, char **argv) {
     ERROR_HELPER(ret,"Cannot handle SIGINT");
 
 
-
     //fixme is this needed?
     Image* my_texture_for_server= my_texture;
 
@@ -521,31 +539,28 @@ int main(int argc, char **argv) {
     //   -send your texture to the server (so that all can see you)
     //   -get an elevation map
     //   -get the texture of the surface
-
     // these come from the server
-
 
     //let's create a TCP socket
     createTCPConnection(server_port);
 
     //and here we get from server all needed stuff to play
-    my_id = getIdFromServer();
-    map_elevation= getMapElevationFromServer();
-    map_texture= getMapTextureFromServer();
+    getIdFromServer();
+    getMapElevationFromServer();
+    getMapTextureFromServer();
     ret = postVehicleTexture(my_texture_for_server, my_id);
     ERROR_HELPER(ret,"Cannot post my vehicle");
-    Image* my_texture_from_server= getVehicleTexture(my_id);
+    getVehicleTexture(my_id);
 
-    // construct the world
-    //not needed anymore World_init(&world, map_elevation, map_texture, 0.5, 0.5, 0.5);
-
+    // construct the world...
     we = WorldExtended_init(map_elevation, map_texture, 0.5, 0.5, 0.5);
-
+    //...setting global bool true
     world_created = true;
 
-
+    //init my vehicle with images got from server
     vehicle=(Vehicle*) malloc(sizeof(Vehicle));
-    Vehicle_init(vehicle, we->w, my_id, my_texture_from_server);
+    Vehicle_init(vehicle, we->w, my_id, my_texture);
+    //and adding it to my world
     WorldExtended_addVehicle(we, vehicle);
 
     // spawn a thread that will listen the update messages from
@@ -556,29 +571,27 @@ int main(int argc, char **argv) {
     // request the texture and add the player to the pool
     /*FILLME*/
 
-
     //FILLME init UDP
     createUDPConnection();
 
     //FILLME spawn both UDP sender/receiver threads.
 
     //handle cancellation threads
-
     pthread_attr_init(&attr1);
     pthread_attr_init(&attr2);
-
 
     ret = pthread_create(&UDP_sender, &attr1, UDPSenderThread, NULL);
     PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_sender");
     ret = pthread_create(&UDP_receiver, NULL, UDPReceiverThread, NULL);
     PTHREAD_ERROR_HELPER(ret, "[MAIN] pthread_create on thread UDP_receiver");
 
+    //handling global bool for threads creation (needed to cleanup later)
     udp_threads_created = true;
-
 
     //here we can run the world and finally play
     WorldViewer_runGlobal(we->w, vehicle, &argc, argv);
 
+    //after exit we cleanup and close
     cleanup();
     return 0;
 }
