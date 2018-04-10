@@ -16,7 +16,7 @@
  */
 
 typedef struct ClientItem {
-    struct sockaddr_in* user_addr;
+    struct sockaddr_in user_addr;
     int id;
 } ClientItem;
 
@@ -35,7 +35,7 @@ WorldServer* WorldServer_init(Image* surface_elevation,
 	       float y_step,
 	       float z_step);
 
-int WorldServer_addClient(WorldServer* ws, Vehicle* v, struct sockaddr_in* user_addr);
+int WorldServer_addClient(WorldServer* ws, Vehicle* v, struct sockaddr_in user_addr);
 int WorldServer_detachClient(WorldServer* ws, int id);
 
 void WorldServer_destroy(WorldServer* ws);

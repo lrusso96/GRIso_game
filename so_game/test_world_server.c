@@ -25,8 +25,8 @@ int main(int argc, char const * argv[]){
     Vehicle* v2 = (Vehicle*) malloc(sizeof(Vehicle));
     Vehicle_init(v2, ws->w, 46, i4);
 
-    struct sockaddr_in* u1 = {0};
-    struct sockaddr_in* u2 = {0};
+    struct sockaddr_in u1 = {0};
+    struct sockaddr_in u2 = {0};
 
 
     WorldServer_addClient(ws, v1, u1);

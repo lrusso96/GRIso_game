@@ -209,7 +209,7 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
     Vehicle* vehicle = (Vehicle*) malloc(sizeof(Vehicle));
 
     Vehicle_init(vehicle, tcpArgs->ws->w, client_id, player_texture);
-    WorldServer_addClient(tcpArgs->ws, vehicle, tcpArgs->client_addr);
+    WorldServer_addClient(tcpArgs->ws, vehicle, *(tcpArgs->client_addr));
 
     logger_verbose(__func__, "Vehicle added to world server.\n");
 
