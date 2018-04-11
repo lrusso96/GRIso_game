@@ -35,6 +35,9 @@ struct sockaddr_in tcp_server_addr, udp_server_addr;
 
 int tcp_sockaddr_len, tcp_server_port;
 
+pthread_t UDP_receiver_thread;
+pthread_attr_t attr1;
+
 
 //the world
 WorldServer* ws;
@@ -473,6 +476,10 @@ void* UDPSenderThread(void* args){
  */
 void* UDPReceiverThread(void* args){
 
+    //enable asynchronous pthread_cancel from cleanup
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
     char buf_recv[BUFFER_SIZE];
 
 
@@ -502,10 +509,11 @@ void mainLoop(void){
     int ret;
 
      //,  UDP_sender_thread, UDP_receiver_thread, TCP_connection_check;
-    pthread_t UDP_receiver_thread;
 
+    //init udpreceiver attr;
+    pthread_attr_init(&attr1);
 
-    ret = pthread_create(&UDP_receiver_thread, NULL, UDPReceiverThread, NULL);
+    ret = pthread_create(&UDP_receiver_thread, &attr1, UDPReceiverThread, NULL);
     ERROR_HELPER(ret, "Can't create UDP receiver thread.\n");
 
 
@@ -515,7 +523,11 @@ void mainLoop(void){
         struct sockaddr_in alias = {1};
         ci->user_addr = alias;
         ci->socket = accept(tcp_server_desc, (struct sockaddr*) &(ci->user_addr), (socklen_t*)&(tcp_sockaddr_len));
-        ERROR_HELPER(ci->socket, "Can't accept incoming connection.\n");
+        //ERROR_HELPER(ci->socket, "Can't accept incoming connection.\n");
+        if(ci->socket < 0){
+            free(ci);
+            return;
+        }
 
         logger_verbose(__func__, "Incoming connection accepted.\n");
 
@@ -534,8 +546,41 @@ void mainLoop(void){
 
 //TODO handle N users connected!
 void cleanup(void){
-    int ret = close(tcp_server_desc);
+    int ret;
+
+    logger_verbose(__func__, "Joining UDP receiver thread");
+    ret = pthread_cancel(UDP_receiver_thread);
+    ERROR_HELPER(ret, "pthread_cancel to UDP_receiver failed");
+    ret = pthread_join(UDP_receiver_thread, NULL);
+
+    pthread_attr_destroy(&attr1);
+    logger_verbose(__func__, "successful join on threads");
+
+    /*
+     * todo:
+     *
+     * add join for all threads spawned (iterate over clientsitems)
+     *
+     * join udp receiver too
+     */
+
+    ret = close(tcp_server_desc);
     ERROR_HELPER(ret, "Can't close server tcp socket.\n");
+    logger_verbose(__func__, "TCP server desc closed");
+    ret = close(udp_server_desc);
+    ERROR_HELPER(ret, "Can't close server udp socket.\n");
+    logger_verbose(__func__, "UDP server desc closed");
+
+    //clean up
+    Image_free(surface_elevation);
+    Image_free(surface_texture);
+    logger_verbose(__func__, "Images free'd");
+
+    WorldServer_destroy(ws);
+    logger_verbose(__func__, "World Server destroyed");
+
+    RandomId_destroy(randomId);
+    logger_verbose(__func__, "all resources were free'd successfully");
 }
 
 void signalHandler(int signal){
@@ -625,26 +670,7 @@ int main(int argc, char **argv) {
   //spawn tcp and udp thread
   mainLoop();
 
-  printf("I'm here.\n");
-
-  //close socket
-
-  ret = close(tcp_server_desc);
-  ERROR_HELPER(ret, "Can't close server tcp socket.\n");
-
-  ret = close(udp_server_desc);
-  ERROR_HELPER(ret, "Can't close server udp socket.\n");
-
-
-  //clean up
-  Image_free(surface_elevation);
-  Image_free(surface_texture);
-
-
-  WorldServer_destroy(ws);
-
-
-  RandomId_destroy(randomId);
-
+  //can arrive here from cleanup only!
+  logger_verbose(__func__, "See you");
   return 0;
 }
