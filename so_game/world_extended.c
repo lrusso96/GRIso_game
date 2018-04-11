@@ -200,11 +200,18 @@ void WorldExtended_setVehicleXYT(WorldExtended* we, int id, float x, float y, fl
 
 
 int WorldExtended_HasIdAndTexture(WorldExtended* we, int id){
+
+    /*
     if(we->max_id < id)
         return -1;
     if(we->ids[id] == true && we->ids == false)
+        return -1;
+    return 0;
+    *
+    */
+    if(we->ids[id] == true && we->ids[id] == true)
         return 0;
-    return 1;
+    return -1;
 }
 
 

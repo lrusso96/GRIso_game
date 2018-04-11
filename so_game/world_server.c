@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "image.h"
+#include "utils.h"
 #include "world.h"
 #include "world_server.h"
 
@@ -16,6 +17,8 @@ WorldServer* WorldServer_init(Image* surface_elevation,
     World_init(ws->w, surface_elevation, surface_texture, x_step, y_step, z_step);
 
     List_init(&ws->clients);
+    int ret = pthread_mutex_init(&(ws->mutex), NULL);
+    ERROR_HELPER(ret, "Can't create mutex");
 
     return ws;
 
@@ -56,6 +59,22 @@ int WorldServer_detachClient(WorldServer* ws, int id){
     return id;
 }
 
+int WorldServer_updateClient(WorldServer* ws, int id, float x, float y, float t){
+    Vehicle* v = World_getVehicle(ws->w, id);
+    v->x = x;
+    v->y = y;
+    v->theta = t;
+    return 0;
+}
+
+int WorldServer_getClientInfo(WorldServer* ws, int id, float* x, float* y, float* t){
+    Vehicle* v = World_getVehicle(ws->w, id);
+    *x = v->x;
+    *y = v->y;
+    *t = v->theta;
+    return 0;
+}
+
 
 void WorldServer_destroy(WorldServer* ws){
     World* w = ws->w;
@@ -73,6 +92,8 @@ void WorldServer_destroy(WorldServer* ws){
     free(ws->w);
 
     List_destroy(&ws->clients);
+    int ret = pthread_mutex_destroy(&(ws->mutex));
+    ERROR_HELPER(ret, "Can't destroy mutex");
 
     //free(ws);
 }

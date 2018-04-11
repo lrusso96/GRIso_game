@@ -35,8 +35,8 @@ struct sockaddr_in tcp_server_addr, udp_server_addr;
 
 int tcp_sockaddr_len, tcp_server_port;
 
-pthread_t UDP_receiver_thread;
-pthread_attr_t attr1;
+pthread_t UDP_receiver_thread, UDP_sender_thread;
+pthread_attr_t attr1, attr2;
 
 
 //the world
@@ -227,7 +227,7 @@ Image* getVehicleTextureFromClient(ClientItem* ci){
 }
 
 
-int postVehicleTextureToClient(ClientItem* ci, Image* player_texture){
+int postVehicleTextureToClient(ClientItem* ci, int id, Image* player_texture){
 
   int size;
   size_t msg_len;
@@ -262,7 +262,7 @@ int postVehicleTextureToClient(ClientItem* ci, Image* player_texture){
   ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
 
   img_packet_pt->header = player_texture_header;
-  img_packet_pt->id = ci->id;
+  img_packet_pt->id = id;
   img_packet_pt->image = player_texture;
 
   size = Packet_serialize(img_packet_player_texture, &(img_packet_pt->header));
@@ -320,9 +320,6 @@ void postIdToClient(ClientItem* ci){
   id_packet->header = ph;
   id_packet->id = ci->id;
 
-  //need this?
-  ws->clients.size ++;
-
   int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
 
   logger_verbose(__func__, "[Server] Bytes written in the buffer %d.\n", bytes_to_send);
@@ -360,7 +357,7 @@ void* TCPWork(void* params){
 
                 player_texture = getVehicleTextureFromClient(ci);
                 if(player_texture->rows && player_texture->cols){
-                    post_pt_flag = postVehicleTextureToClient(ci, player_texture);
+                    post_pt_flag = postVehicleTextureToClient(ci, client_id, player_texture);
                     if(post_pt_flag){
                         //Client is ready to play
                         logger_verbose(__func__, "Listening update packets from client.\n");
@@ -400,6 +397,54 @@ void* TCPWork(void* params){
                             free(deserialized_packet);
 
                         }
+
+                        else if(incoming_pckt->type == GetTexture){
+                            msg_len = griso_recv(ci->socket, buf_rcv+ph_len, size);
+                            ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
+
+                            ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
+                            int id = deserialized_packet->id;
+                            Image* im = NULL;
+
+                            World* w = ws->w;
+                            ListItem* item=w->vehicles.first;
+                            while(item){
+                                Vehicle* v=(Vehicle*)item;
+                                if(v->id == id){
+                                    im = v->texture;
+                                    break;
+                                }
+                                item = item->next;
+                            }
+
+
+/////////////// wrap this
+
+                            //Send player texture packet to client
+                            char img_packet_player_texture[BUFFER_SIZE];
+                            PacketHeader player_texture_header;
+
+                            player_texture_header.type = PostTexture;
+
+                            ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
+
+                            img_packet_pt->header = player_texture_header;
+                            img_packet_pt->id = id;
+                            img_packet_pt->image = im;
+
+                            size = Packet_serialize(img_packet_player_texture, &(img_packet_pt->header));
+
+                            size_t msg_len = griso_send(ci->socket, img_packet_player_texture, size);
+                            ERROR_HELPER(msg_len, "Can't send player texture packet to client.\n");
+
+                            logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
+
+                            //postVehicleTextureToClient(ci, id, im);
+
+                        }
+
+
+
                     }
                 }
             }
@@ -464,9 +509,69 @@ void createUDPConnection(void){
 
 
 void* UDPSenderThread(void* args){
+
+    //enable asynchronous pthread_cancel from cleanup
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
+
+    unsigned long epoch = 1;
+
+    char buf_send[BUFFER_SIZE];
+
+    PacketHeader ph;
+    ph.type = WorldUpdate;
+
+    WorldUpdatePacket* wup = (WorldUpdatePacket*) malloc(sizeof(WorldUpdatePacket));
+    wup->header = ph;
+
     while(is_up){
-      sleep(5);
+        sleep(2);
+
+        if(ws->clients.size==0){
+            continue;
+        }
+
+
+        pthread_mutex_lock(&(ws->mutex));
+
+        //set num_vehicles (world size can't change now!)
+        wup->num_vehicles = ws->clients.size;
+
+        wup->epoch = epoch++;
+
+        wup->updates = (ClientUpdate*) malloc(sizeof(ClientUpdate)*wup->num_vehicles);
+
+        ListItem* item = ws->clients.first;
+        int i = 0;
+        logger_verbose(__func__,"start my loop");
+        while(item){
+            ClientItem* ci=(ClientItem*)item;
+            item = item->next;
+
+            ClientUpdate* cu = &(wup->updates[i++]);
+            cu->id = ci->id;
+            WorldServer_getClientInfo(ws, cu->id, &(cu->x), &(cu->y), &(cu->theta));
+            logger_verbose(__func__,"info: %d, %f, %f, %f", cu->id, cu->y, cu->theta);
+        }
+
+        logger_verbose(__func__,"end my loop");
+
+        int size = Packet_serialize(buf_send, &wup->header);
+        logger_verbose(__func__, "serialized packet wup of %d bytes", size);
+
+        pthread_mutex_unlock(&(ws->mutex));
+
+        //send update to everyone now
+        item = ws->clients.first;
+        while(item){
+            ClientItem* ci=(ClientItem*)item;
+            item = item->next;
+
+            int sent = sendto(udp_server_desc, buf_send, size, 0, (struct sockaddr *) &(ci->clientStorage), ci->addr_size);
+            logger_verbose(__func__, "sent %d bytes of world update to client %d", sent, ci->id);
+        }
     }
+
     return NULL;
 }
 
@@ -490,13 +595,45 @@ void* UDPReceiverThread(void* args){
 
 
     while(is_up){
+
         int nBytes = recvfrom(udpSocket, buf_recv, BUFFER_SIZE, 0, (struct sockaddr *)&serverStorage, &addr_size);
         logger_verbose(__func__, "received %d bytes", nBytes);
 
         VehicleUpdatePacket* v_packet = (VehicleUpdatePacket*) Packet_deserialize(buf_recv, nBytes);
 
+        ListItem* item = ws->clients.first;
+         while(item){
+            ClientItem* ci=(ClientItem*)item;
+            item = item->next;
+            if(ci->id == v_packet->id){
+                ci->clientStorage = serverStorage;
+                ci->addr_size = addr_size;
+                break;
+            }
+        }
+
+
+/*
+        int nn = sendto(udpSocket, buf_recv, nBytes, 0, (struct sockaddr *)&serverStorage, addr_size);
+        logger_verbose(__func__, "sent back %d bytes", nn);
+
+*/
+
+
+        pthread_mutex_lock(&(ws->mutex));
+        WorldServer_updateClient(ws, v_packet->id, v_packet->x, v_packet->y, v_packet->theta);
+
+
+        //now update clientitem if needed
+
+
+
+
+
+        pthread_mutex_unlock(&(ws->mutex));
         logger_verbose(__func__, "packet received:\n\ttype = %d\n\tsize = %d\n\tid = %d\n\tx = %fn\ty = %fn\ttheta = %f",
-		 v_packet->header.type, v_packet->header.size, v_packet->id, v_packet->x, v_packet->y, v_packet->theta);
+        v_packet->header.type, v_packet->header.size, v_packet->id, v_packet->x, v_packet->y, v_packet->theta);
+
         sleep(1);
     }
     return NULL;
@@ -514,6 +651,12 @@ void mainLoop(void){
     pthread_attr_init(&attr1);
 
     ret = pthread_create(&UDP_receiver_thread, &attr1, UDPReceiverThread, NULL);
+    ERROR_HELPER(ret, "Can't create UDP receiver thread.\n");
+
+    //init udpreceiver attr;
+    pthread_attr_init(&attr2);
+
+    ret = pthread_create(&UDP_sender_thread, &attr1, UDPSenderThread, NULL);
     ERROR_HELPER(ret, "Can't create UDP receiver thread.\n");
 
 
@@ -535,13 +678,6 @@ void mainLoop(void){
         ret = pthread_create(&TCP_thread, NULL, TCPWork, (void*)ci);
         ERROR_HELPER(ret, "Can't create TCP_thread.\n");
     }
-
-    /*ret = pthread_join(TCP_thread, NULL);
-    ERROR_HELPER(ret, "Can't join TCP_thread.\n");*/
-
-    ret = pthread_join(UDP_receiver_thread, NULL);
-    ERROR_HELPER(ret, "Can't join UDP receiver thread.\n");
-
 }
 
 //TODO handle N users connected!

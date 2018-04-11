@@ -107,7 +107,7 @@ ListItem* List_detach(ListHead* head, ListItem* item) {
 
 }
 
-  head->size--;
+  --head->size;
 
   item->next=item->prev=0;
 

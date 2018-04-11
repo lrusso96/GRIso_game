@@ -421,7 +421,7 @@ void* UDPSenderThread(void* args){
     while(running){
 
         //todo decide sleeping time
-        usleep(5000000);
+        sleep(2);
 
         vpckt->req_number = req_number++;
 
@@ -447,14 +447,17 @@ void* UDPSenderThread(void* args){
 void applyUpdates(WorldUpdatePacket* wup){
     //fillme
 
+    logger_verbose(__func__, "vehicles = %d", wup->num_vehicles);
+
     for(int i= 0; i<wup->num_vehicles; i++){
         ClientUpdate cu = wup->updates[i];
+
+        logger_verbose(__func__, "vehicle %d with %f, %f, %f", cu.id, cu.x, cu.y, cu.theta);
 
         int id = cu.id;
         //skip my id !
         if(id == my_id)
             continue;
-
 
         float x = cu.x;
         float y = cu.y;
@@ -466,6 +469,7 @@ void applyUpdates(WorldUpdatePacket* wup){
         //if not, request his texture and add to world
 
         int val = WorldExtended_HasIdAndTexture(we, id);
+        printf("-------------------VAL = %d\n\n\n\n", val);
         if(val==-1){
             logger_verbose(__func__, "vehicle with id %d joined the game", id);
             Image * t = getVehicleTexture(id);
@@ -484,6 +488,8 @@ void applyUpdates(WorldUpdatePacket* wup){
         //update its position
         WorldExtended_setVehicleXYT(we, id, x, y, theta);
 
+        World_update(we->w);
+
     }
 
     //free packet
@@ -501,10 +507,13 @@ void* UDPReceiverThread(void* args){
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, NULL);
 
+
+
     char buf_recv[BUFFER_SIZE];
 
     while(running){
-        usleep(500000);
+
+        sleep(2);
 
         int nBytes = recvfrom(socket_udp, buf_recv, BUFFER_SIZE, 0, NULL, NULL);
         logger_verbose(__func__, "received %d bytes", nBytes);
