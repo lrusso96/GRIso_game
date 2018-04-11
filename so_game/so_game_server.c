@@ -337,40 +337,71 @@ void postIdToClient(TCPArgs* tcpArgs, int client_id){
 
 void* TCPWork(void* params){
 
-  int client_id, elevation_surface_flag, texture_surface_flag, post_pt_flag;
-  Image* player_texture;
+    int client_id, elevation_surface_flag, texture_surface_flag, post_pt_flag;
+    Image* player_texture;
 
-  TCPArgs* tcpArgs = (TCPArgs*) params;
+    TCPArgs* tcpArgs = (TCPArgs*) params;
 
-  client_id = getIdFromClient(tcpArgs);
+    client_id = getIdFromClient(tcpArgs);
 
-  //Client satisfied game protocol
-  if(client_id){
+    //Client satisfied game protocol
+    if(client_id){
+        postIdToClient(tcpArgs, client_id);
 
-    postIdToClient(tcpArgs, client_id);
+        elevation_surface_flag = postMapElevationToClient(tcpArgs, client_id);
 
-    elevation_surface_flag = postMapElevationToClient(tcpArgs, client_id);
+        if(elevation_surface_flag){
+            texture_surface_flag = postMapTextureToClient(tcpArgs, client_id);
+            if(texture_surface_flag){
 
-    if(elevation_surface_flag){
+                player_texture = getVehicleTextureFromClient(tcpArgs, client_id);
+                if(player_texture->rows && player_texture->cols){
+                    post_pt_flag = postVehicleTextureToClient(tcpArgs, client_id, player_texture);
+                    if(post_pt_flag){
+                        //Client is ready to play
+                        printf("Listening update packets from client.\n");
 
-      texture_surface_flag = postMapTextureToClient(tcpArgs, client_id);
-      if(texture_surface_flag){
+                        /*fillme recv a packet
+                         *
+                         * if quit packet, detach client and close
+                         * if gettexture packet, post texture
+                         *
+                         */
 
-	player_texture = getVehicleTextureFromClient(tcpArgs, client_id);
-	if(player_texture->rows && player_texture->cols){
+                        char buf_rcv[BUFFER_SIZE];
+                        int ph_len = sizeof(PacketHeader);
 
-	  post_pt_flag = postVehicleTextureToClient(tcpArgs, client_id, player_texture);
-	  if(post_pt_flag){
-	    //Client is ready to play
-	    printf("Listening update packets from client.\n");
-	  }
-	}
-      }
+                        size_t msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ph_len);
+                        ERROR_HELPER(msg_len, "Can't receive header packeth\n");
+
+                        logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
+
+                        PacketHeader* incoming_pckt=(PacketHeader*) buf_rcv;
+                        int size = incoming_pckt->size-ph_len;
+
+                        //Receive rest of packet
+                        if(incoming_pckt->type == Quit){
+                            msg_len = griso_recv(tcpArgs->client_socket, buf_rcv+ph_len, size);
+                            ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
+
+                            IdPacket* deserialized_packet = (IdPacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
+                            int id = deserialized_packet->id;
+                            logger_verbose(__func__, "Bytes received : %d bytes.\n",msg_len);
+                            logger_verbose(__func__, "Quit packet with :\n\tid = %d\n", id);
+
+                            //free not needed
+                            //Packet_free(&(deserialized_packet->header));
+
+                            WorldServer_detachClient(tcpArgs->ws, id);
+                            free(deserialized_packet);
+
+                        }
+                    }
+                }
+            }
+        }
     }
-  }
-
   printf("Done.\n");
-
   return NULL;
 }
 
@@ -507,7 +538,7 @@ void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
 
         pthread_t TCP_thread;
         ret = pthread_create(&TCP_thread, NULL, TCPWork, (void*)tcpArgs);
-    ERROR_HELPER(ret, "Can't create TCP_thread.\n");
+        ERROR_HELPER(ret, "Can't create TCP_thread.\n");
     }
 
     /*ret = pthread_join(TCP_thread, NULL);
@@ -522,7 +553,6 @@ void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
 void cleanup(void){
     int ret = close(server_desc);
     ERROR_HELPER(ret, "Can't close server tcp socket.\n");
-    printf("...");
 }
 
 void signalHandler(int signal){

@@ -171,6 +171,34 @@ void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float*
 }
 
 
+void WorldExtended_setVehicleXYT(WorldExtended* we, int id, float x, float y, float t){
+
+    int ret;
+    ListHead* lh = &(we->w->vehicles);
+
+    //we need to do this in critical section!
+    ret = sem_wait(&(lh->sem));
+    ERROR_HELPER(ret, "sem_wait failed");
+
+    ListItem* item = lh->first;
+    while(item){
+        Vehicle* v = (Vehicle*)item;
+
+        if(v->id==id){
+            v->x = x;
+            v->y = y;
+            v->theta = t;
+            ret = sem_post(&(lh->sem));
+            ERROR_HELPER(ret, "sem_post failed");
+            return;
+        }
+        item=item->next;
+    }
+    ret = sem_post(&(lh->sem));
+    ERROR_HELPER(ret, "sem_post failed");
+}
+
+
 int WorldExtended_HasIdAndTexture(WorldExtended* we, int id){
     if(we->max_id < id)
         return -1;

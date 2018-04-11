@@ -18,6 +18,7 @@
 typedef struct ClientItem {
     struct sockaddr_in user_addr;
     int id;
+    pthread_t* tcp_thread;
 } ClientItem;
 
 typedef struct WorldServer {

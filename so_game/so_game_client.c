@@ -419,6 +419,10 @@ void* UDPSenderThread(void* args){
     vpckt->header = ph;
 
     while(running){
+
+        //todo decide sleeping time
+        usleep(5000000);
+
         vpckt->req_number = req_number++;
 
         //done in mutual exclusion
@@ -434,10 +438,6 @@ void* UDPSenderThread(void* args){
         else{
             logger_verbose(__func__, "Update packet successfully sent");
         }
-
-        //todo decide sleeping time
-        usleep(5000000);
-
     }
 
     return NULL;
@@ -455,20 +455,35 @@ void applyUpdates(WorldUpdatePacket* wup){
         if(id == my_id)
             continue;
 
-        int val = WorldExtended_HasIdAndTexture(we, id);
-        if(val==-1){
-            logger_verbose(__func__, "vehicle with id %d joined the game", id);
-            //getVehicleTexture(
-        }
-        if(val == 0){
-            logger_verbose(__func__, "updating vehicle with id %d", id);
-            //setxyt for that vehicle
-        }
+
+        float x = cu.x;
+        float y = cu.y;
+        float theta = cu.theta;
 
 
         //check if it is already in the world
         //if yes, update its poisiton
         //if not, request his texture and add to world
+
+        int val = WorldExtended_HasIdAndTexture(we, id);
+        if(val==-1){
+            logger_verbose(__func__, "vehicle with id %d joined the game", id);
+            Image * t = getVehicleTexture(id);
+
+            //init my vehicle with images got from server
+            Vehicle* new_v = (Vehicle*) malloc(sizeof(Vehicle));
+            Vehicle_init(new_v, we->w, id, t);
+
+            //and adding it to my world
+            WorldExtended_addVehicle(we, new_v);
+        }
+        else if(val == 0){
+            logger_verbose(__func__, "updating vehicle with id %d", id);
+        }
+
+        //update its position
+        WorldExtended_setVehicleXYT(we, id, x, y, theta);
+
     }
 
     //free packet

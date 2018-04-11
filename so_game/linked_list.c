@@ -89,6 +89,8 @@ ListItem* List_detach(ListHead* head, ListItem* item) {
 
   ListItem* prev=item->prev;
   ListItem* next=item->next;
+
+
   if (prev){
     prev->next=next;
   }
@@ -127,6 +129,10 @@ free(head);
  */
 
 void List_append(ListHead* head, ListItem* item){
+
+    item->prev = 0;
+    item->next = 0;
+
     sem_wait(&(head->sem));
     ListItem* last = head->last;
     if(last){

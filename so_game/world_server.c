@@ -43,11 +43,12 @@ int WorldServer_detachClient(WorldServer* ws, int id){
     ListItem* item = ws->clients.first;
 
     while(item){
-
         ClientItem* ci=(ClientItem*)item;
+
         item = item->next;
+
         if(ci->id==id){
-            List_detach(&ws->clients, (ListItem*) ci);
+            List_detach(&(ws->clients), (ListItem*) ci);
             free(ci);
             return id;
         }
