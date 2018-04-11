@@ -25,45 +25,47 @@
 #include "world_server.h"
 
 
+//----------GLOBAL vars------------------------------------------------>
 
 bool is_up = false;
 
-//GLOBAL
+//server descriptors (tcp & ud)
+int tcp_server_desc, udp_server_desc;
+struct sockaddr_in tcp_server_addr, udp_server_addr;
 
-int server_desc;
+int tcp_sockaddr_len, tcp_server_port;
 
+
+//the world
+WorldServer* ws;
+
+//images of the world
+Image* surface_elevation;
+Image* surface_texture;
+
+//progressive id getter
 RandomId* randomId;
 
 
 typedef struct{
-  struct sockaddr_in server_addr;
-  struct sockaddr_in* client_addr;
-  int sockaddr_len;
-  int server_desc;
-  int server_port;
+  struct sockaddr_in* client_addr;      //field of client item
   int client_socket;
-  Image* surface_elevation;
-  Image* surface_texture;
-  WorldServer* ws;
 } TCPArgs;
 
-typedef struct{
-  struct sockaddr_in server_addr;
-  int server_desc;
-} UDPArgs;
 
 
-int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
+
+int postMapElevationToClient(ClientItem* ci){
 
   size_t msg_len;
   char img_packet_buffer[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
   int ip_len = sizeof(IdPacket);
 
-  logger_verbose(__func__, "[Server] Waiting elevation surface request from client #%d.\n", client_id);
+  logger_verbose(__func__, "[Server] Waiting elevation surface request from client #%d.\n", ci->id);
 
   //Receive map elevation request from client
-  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
+  msg_len = griso_recv(ci->socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive map elevation request from client.\n");
 
   logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
@@ -84,13 +86,13 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   PacketHeader header_elevation_surface;
   ImagePacket* img_packet_elevation_surface = (ImagePacket*) malloc(sizeof(ImagePacket));
 
-  logger_verbose(__func__, "Sending elevation surface to client #%d.\n", client_id);
+  logger_verbose(__func__, "Sending elevation surface to client #%d.\n", ci->id);
 
   header_elevation_surface.type = PostElevation;
 
   img_packet_elevation_surface->header = header_elevation_surface;
   img_packet_elevation_surface->id = 0;
-  img_packet_elevation_surface->image = tcpArgs->surface_elevation;
+  img_packet_elevation_surface->image = surface_elevation;
 
   logger_verbose(__func__, "img_packet_elevation_surface with :\ntype\t%d\nsize\t%d\n", img_packet_elevation_surface->header.type, img_packet_elevation_surface->header.size);
   logger_verbose(__func__, "Serialize img_packet_elevation_surface.\n");
@@ -100,7 +102,7 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   logger_verbose(__func__, "Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
   //Send serialize img_elevation_surface to client
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, img_packet_buffer_size);
+  msg_len = griso_send(ci->socket, img_packet_buffer, img_packet_buffer_size);
   ERROR_HELPER(msg_len, "Can't send serialize elevation surface package to client.\n");
 
   logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
@@ -108,19 +110,17 @@ int postMapElevationToClient(TCPArgs* tcpArgs, int client_id){
   return 1;
 }
 
-int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
+int postMapTextureToClient(ClientItem* ci){
 
   size_t msg_len;
   char img_packet_buffer[BUFFER_SIZE];
   char buf_rcv[BUFFER_SIZE];
   size_t ip_len = sizeof(IdPacket);
 
-
-
-  logger_verbose(__func__, "Waiting texture surface request from client #%d.\n", client_id);
+  logger_verbose(__func__, "Waiting texture surface request from client #%d.\n", ci->id);
 
   //Receive texture surface request from client
-  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
+  msg_len = griso_recv(ci->socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive texture surface request from client.\n");
 
   logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
@@ -139,13 +139,13 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   ImagePacket* img_packet_texture_surface = (ImagePacket*) malloc(sizeof(ImagePacket));
   //size_t ph_len = sizeof(PacketHeader);
 
-  logger_verbose(__func__, "Sending texture surface to client #%d.\n", client_id);
+  logger_verbose(__func__, "Sending texture surface to client #%d.\n", ci->id);
 
   header_texture_surface.type = PostTexture;
 
   img_packet_texture_surface->header = header_texture_surface;
   img_packet_texture_surface->id = 0;
-  img_packet_texture_surface->image = tcpArgs->surface_texture;
+  img_packet_texture_surface->image = surface_texture;
 
   logger_verbose(__func__, "img_packet_texture_surface with :\ntype\t%d\nsize\t%d\n", img_packet_texture_surface->header.type, img_packet_texture_surface->header.size);
 
@@ -156,7 +156,7 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
   logger_verbose(__func__, "Bytes written in the buffer : %d.\n", img_packet_buffer_size);
 
   //Send serialize img_texture_surface to client
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_buffer, img_packet_buffer_size);
+  msg_len = griso_send(ci->socket, img_packet_buffer, img_packet_buffer_size);
   ERROR_HELPER(msg_len, "Can't send serialized texture surface package to client.\n");
 
   logger_verbose(__func__, "[Server - Data] Bytes sent : %zu bytes.\n", msg_len);
@@ -165,17 +165,17 @@ int postMapTextureToClient(TCPArgs* tcpArgs, int client_id){
 }
 
 
-Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
+Image* getVehicleTextureFromClient(ClientItem* ci){
 
   size_t msg_len;
   char buf_rcv[BUFFER_SIZE];
   int ip_len = sizeof(ImagePacket);
   int size;
 
-  logger_verbose(__func__, "Receiving player texture from client #%d.\n", client_id);
+  logger_verbose(__func__, "Receiving player texture from client #%d.\n", ci->id);
 
   //Receive player texture header from client
-  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
+  msg_len = griso_recv(ci->socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive player texture from client.\n");
 
   logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
@@ -192,7 +192,7 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
     logger_verbose(__func__, "Header Check Passed.\n");
 
     //Receive player texture data from client
-    msg_len = griso_recv(tcpArgs->client_socket, buf_rcv+ip_len, size);
+    msg_len = griso_recv(ci->socket, buf_rcv+ip_len, size);
     ERROR_HELPER(msg_len, "Can't receive player texture date from client.\n");
 
     logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
@@ -208,8 +208,8 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
     //Build client vehicle and add to world server
     Vehicle* vehicle = (Vehicle*) malloc(sizeof(Vehicle));
 
-    Vehicle_init(vehicle, tcpArgs->ws->w, client_id, player_texture);
-    WorldServer_addClient(tcpArgs->ws, vehicle, *(tcpArgs->client_addr));
+    Vehicle_init(vehicle, ws->w, ci->id, player_texture);
+    WorldServer_addClient(ws, vehicle, ci);
 
     logger_verbose(__func__, "Vehicle added to world server.\n");
 
@@ -224,7 +224,7 @@ Image* getVehicleTextureFromClient(TCPArgs* tcpArgs, int client_id){
 }
 
 
-int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_texture){
+int postVehicleTextureToClient(ClientItem* ci, Image* player_texture){
 
   int size;
   size_t msg_len;
@@ -232,10 +232,10 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
   char buf_rcv[BUFFER_SIZE];
   int ip_len = sizeof(IdPacket);
 
-  logger_verbose(__func__, "Waiting player texture request from client #%d.\n", client_id);
+  logger_verbose(__func__, "Waiting player texture request from client #%d.\n", ci->id);
 
   //Receive player texture request from client
-  msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ip_len);
+  msg_len = griso_recv(ci->socket, buf_rcv, ip_len);
   ERROR_HELPER(msg_len, "Can't receive player texture request from client.\n");
 
   logger_verbose(__func__, "Bytes received : %zu bytes.\n", msg_len);
@@ -259,12 +259,12 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
   ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
 
   img_packet_pt->header = player_texture_header;
-  img_packet_pt->id = client_id;
+  img_packet_pt->id = ci->id;
   img_packet_pt->image = player_texture;
 
   size = Packet_serialize(img_packet_player_texture, &(img_packet_pt->header));
 
-  msg_len = griso_send(tcpArgs->client_socket, img_packet_player_texture, size);
+  msg_len = griso_send(ci->socket, img_packet_player_texture, size);
   ERROR_HELPER(msg_len, "Can't send player texture packet to client.\n");
 
   logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
@@ -273,7 +273,7 @@ int postVehicleTextureToClient(TCPArgs* tcpArgs, int client_id, Image* player_te
 }
 
 
-int getIdFromClient(TCPArgs* tcpArgs){
+int getIdFromClient(ClientItem* ci){
 
   char id_packet_buffer[BUFFER_SIZE];
   size_t pi_len = sizeof(IdPacket);
@@ -282,7 +282,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
   logger_verbose(__func__, "Receiving an id request from client.\n");
 
   //Receive an id request from client
-  msg_len = griso_recv(tcpArgs->client_socket, id_packet_buffer, pi_len);
+  msg_len = griso_recv(ci->socket, id_packet_buffer, pi_len);
   ERROR_HELPER(msg_len, "griso_recv failed.\n");
 
   logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
@@ -305,7 +305,7 @@ int getIdFromClient(TCPArgs* tcpArgs){
   return 0;
 }
 
-void postIdToClient(TCPArgs* tcpArgs, int client_id){
+void postIdToClient(ClientItem* ci){
 
   char id_packet_buffer[BUFFER_SIZE];
   size_t msg_len;
@@ -315,17 +315,17 @@ void postIdToClient(TCPArgs* tcpArgs, int client_id){
 
   IdPacket* id_packet = (IdPacket*) malloc(sizeof(IdPacket));
   id_packet->header = ph;
-  id_packet->id = client_id;
+  id_packet->id = ci->id;
 
   //need this?
-  ++tcpArgs->ws->clients.size;
+  ws->clients.size ++;
 
   int bytes_to_send = Packet_serialize(id_packet_buffer, &id_packet->header);
 
   logger_verbose(__func__, "[Server] Bytes written in the buffer %d.\n", bytes_to_send);
 
   //Send id packet to client
-  msg_len = griso_send(tcpArgs->client_socket, id_packet_buffer, bytes_to_send);
+  msg_len = griso_send(ci->socket, id_packet_buffer, bytes_to_send);
   ERROR_HELPER(msg_len, "griso_send failed.\n");
 
   logger_verbose(__func__, "[Server - Data] Bytes sent : %d bytes.\n", msg_len);
@@ -340,26 +340,27 @@ void* TCPWork(void* params){
     int client_id, elevation_surface_flag, texture_surface_flag, post_pt_flag;
     Image* player_texture;
 
-    TCPArgs* tcpArgs = (TCPArgs*) params;
+    ClientItem* ci = (ClientItem*) params;
 
-    client_id = getIdFromClient(tcpArgs);
+    client_id = getIdFromClient(ci);
 
     //Client satisfied game protocol
     if(client_id){
-        postIdToClient(tcpArgs, client_id);
+        ci->id = client_id;
+        postIdToClient(ci);
 
-        elevation_surface_flag = postMapElevationToClient(tcpArgs, client_id);
+        elevation_surface_flag = postMapElevationToClient(ci);
 
         if(elevation_surface_flag){
-            texture_surface_flag = postMapTextureToClient(tcpArgs, client_id);
+            texture_surface_flag = postMapTextureToClient(ci);
             if(texture_surface_flag){
 
-                player_texture = getVehicleTextureFromClient(tcpArgs, client_id);
+                player_texture = getVehicleTextureFromClient(ci);
                 if(player_texture->rows && player_texture->cols){
-                    post_pt_flag = postVehicleTextureToClient(tcpArgs, client_id, player_texture);
+                    post_pt_flag = postVehicleTextureToClient(ci, player_texture);
                     if(post_pt_flag){
                         //Client is ready to play
-                        printf("Listening update packets from client.\n");
+                        logger_verbose(__func__, "Listening update packets from client.\n");
 
                         /*fillme recv a packet
                          *
@@ -371,7 +372,7 @@ void* TCPWork(void* params){
                         char buf_rcv[BUFFER_SIZE];
                         int ph_len = sizeof(PacketHeader);
 
-                        size_t msg_len = griso_recv(tcpArgs->client_socket, buf_rcv, ph_len);
+                        size_t msg_len = griso_recv(ci->socket, buf_rcv, ph_len);
                         ERROR_HELPER(msg_len, "Can't receive header packeth\n");
 
                         logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
@@ -381,7 +382,7 @@ void* TCPWork(void* params){
 
                         //Receive rest of packet
                         if(incoming_pckt->type == Quit){
-                            msg_len = griso_recv(tcpArgs->client_socket, buf_rcv+ph_len, size);
+                            msg_len = griso_recv(ci->socket, buf_rcv+ph_len, size);
                             ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
 
                             IdPacket* deserialized_packet = (IdPacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
@@ -392,7 +393,7 @@ void* TCPWork(void* params){
                             //free not needed
                             //Packet_free(&(deserialized_packet->header));
 
-                            WorldServer_detachClient(tcpArgs->ws, id);
+                            WorldServer_detachClient(ws, id);
                             free(deserialized_packet);
 
                         }
@@ -405,32 +406,32 @@ void* TCPWork(void* params){
   return NULL;
 }
 
-void createTCPConnection(TCPArgs* tcpArgs){
+void createTCPConnection(void){
 
   int ret;
 
-  tcpArgs->sockaddr_len = sizeof(struct sockaddr_in);
-  tcpArgs->client_addr = calloc(1, sizeof(struct sockaddr_in));
+  tcp_sockaddr_len = sizeof(struct sockaddr_in);
+  //tcpArgs->client_addr = calloc(1, sizeof(struct sockaddr_in));
 
   //Initialize server socket for listening
-  server_desc = socket(AF_INET, SOCK_STREAM, 0);
-  ERROR_HELPER(tcpArgs->server_desc, "Can't create a server socket.\n");
+  tcp_server_desc = socket(AF_INET, SOCK_STREAM, 0);
+  ERROR_HELPER(tcp_server_desc, "Can't create a server socket.\n");
 
-  tcpArgs->server_addr.sin_addr.s_addr = INADDR_ANY;
-  tcpArgs->server_addr.sin_family = AF_INET;
-  tcpArgs->server_addr.sin_port = htons(tcpArgs->server_port);
+  tcp_server_addr.sin_addr.s_addr = INADDR_ANY;
+  tcp_server_addr.sin_family = AF_INET;
+  tcp_server_addr.sin_port = htons(tcp_server_port);
 
   //We enable SO_REUSEADDR to restart server after a crash
   int reuseaddr_opt = 1;
-  ret = setsockopt(server_desc, SOL_SOCKET, SO_REUSEADDR, &reuseaddr_opt, sizeof(reuseaddr_opt));
+  ret = setsockopt(tcp_server_desc, SOL_SOCKET, SO_REUSEADDR, &reuseaddr_opt, sizeof(reuseaddr_opt));
   ERROR_HELPER(ret, "Can't set reuseaddr option.\n");
 
   //Now, we bind address to socket
-  ret = bind(server_desc, (struct sockaddr*) &(tcpArgs->server_addr), tcpArgs->sockaddr_len);
+  ret = bind(tcp_server_desc, (struct sockaddr*) &(tcp_server_addr), tcp_sockaddr_len);
   ERROR_HELPER(ret, "Can't bind address to socket.\n");
 
   //Start listening on server desc
-  ret = listen(server_desc, MAX_CONNECTIONS);
+  ret = listen(tcp_server_desc, MAX_CONNECTIONS);
   ERROR_HELPER(ret, "Can't listen on server desc.\n");
 
   is_up = true;
@@ -439,20 +440,20 @@ void createTCPConnection(TCPArgs* tcpArgs){
 }
 
 
-void createUDPConnection(UDPArgs* udpArgs){
+void createUDPConnection(void){
 
   uint16_t udp_port_number = htons((uint16_t)SERVER_UDP_PORT); // we use network byte order
-  udpArgs->server_desc = socket(AF_INET, SOCK_DGRAM, 0);
-  ERROR_HELPER(udpArgs->server_desc, "Can't create an UDP socket");
+  udp_server_desc = socket(AF_INET, SOCK_DGRAM, 0);
+  ERROR_HELPER(udp_server_desc, "Can't create an UDP socket");
 
-  udpArgs->server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
-  udpArgs->server_addr.sin_family = AF_INET;
-  udpArgs->server_addr.sin_port = udp_port_number;
+  udp_server_addr.sin_addr.s_addr = inet_addr(SERVER_ADDRESS);
+  udp_server_addr.sin_family = AF_INET;
+  udp_server_addr.sin_port = udp_port_number;
 
-  memset(udpArgs->server_addr.sin_zero, '\0', sizeof udpArgs->server_addr.sin_zero);
+  memset(udp_server_addr.sin_zero, '\0', sizeof udp_server_addr.sin_zero);
 
    /*Bind socket with address struct*/
-  bind(udpArgs->server_desc, (struct sockaddr *) &(udpArgs->server_addr), sizeof(udpArgs->server_addr));
+  bind(udp_server_desc, (struct sockaddr *) &(udp_server_addr), sizeof(udp_server_addr));
 
   logger_verbose(__func__, "UDP socket successfully created");
 }
@@ -474,8 +475,8 @@ void* UDPReceiverThread(void* args){
 
     char buf_recv[BUFFER_SIZE];
 
-    UDPArgs* udpArgs = (UDPArgs*) args;
-    int udpSocket = udpArgs->server_desc;
+
+    int udpSocket = udp_server_desc;
 
     struct sockaddr_storage serverStorage;
     socklen_t addr_size = sizeof(serverStorage);
@@ -494,30 +495,9 @@ void* UDPReceiverThread(void* args){
     return NULL;
 }
 
-void* TCPConnectionCheck(void* params){
-
-  int ret;
-  char alive_buf[128];
-
-  TCPArgs* tcpArgs = (TCPArgs*) params;
-  sprintf(alive_buf, "Alive !\n");
-
-  while(is_up){
-    ret = send(tcpArgs->client_socket, alive_buf, strlen(alive_buf), 0);
-    //check if connection client is alive
-    if(ret == -1 && errno == ENOTCONN){
-      printf("Client disconnected.\n");
-      break;
-    }
-    sleep(5);
-  }
-
-  return NULL;
-}
-
 
 //TODO handle multi clients
-void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
+void mainLoop(void){
 
     int ret;
 
@@ -525,19 +505,22 @@ void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
     pthread_t UDP_receiver_thread;
 
 
-
-    ret = pthread_create(&UDP_receiver_thread, NULL, UDPReceiverThread, (void*)udpArgs);
+    ret = pthread_create(&UDP_receiver_thread, NULL, UDPReceiverThread, NULL);
     ERROR_HELPER(ret, "Can't create UDP receiver thread.\n");
 
 
     while(is_up){
-        tcpArgs->client_socket = accept(server_desc, (struct sockaddr*) tcpArgs->client_addr, (socklen_t*)&(tcpArgs->sockaddr_len));
-        ERROR_HELPER(tcpArgs->client_socket, "Can't accept incoming connection.\n");
 
-        printf("Incoming connection accepted.\n");
+        ClientItem* ci = (ClientItem*) malloc(sizeof(ClientItem));
+        struct sockaddr_in alias = {1};
+        ci->user_addr = alias;
+        ci->socket = accept(tcp_server_desc, (struct sockaddr*) &(ci->user_addr), (socklen_t*)&(tcp_sockaddr_len));
+        ERROR_HELPER(ci->socket, "Can't accept incoming connection.\n");
+
+        logger_verbose(__func__, "Incoming connection accepted.\n");
 
         pthread_t TCP_thread;
-        ret = pthread_create(&TCP_thread, NULL, TCPWork, (void*)tcpArgs);
+        ret = pthread_create(&TCP_thread, NULL, TCPWork, (void*)ci);
         ERROR_HELPER(ret, "Can't create TCP_thread.\n");
     }
 
@@ -551,7 +534,7 @@ void mainLoop(TCPArgs* tcpArgs, UDPArgs* udpArgs){
 
 //TODO handle N users connected!
 void cleanup(void){
-    int ret = close(server_desc);
+    int ret = close(tcp_server_desc);
     ERROR_HELPER(ret, "Can't close server tcp socket.\n");
 }
 
@@ -587,7 +570,7 @@ int main(int argc, char **argv) {
   */
 
   // load the images
-  Image* surface_elevation = Image_load(elevation_filename);
+  surface_elevation = Image_load(elevation_filename);
   if (surface_elevation) {
     printf("Done! \n");
   } else {
@@ -595,22 +578,14 @@ int main(int argc, char **argv) {
   }
 
   printf("loading texture image from %s ... ", texture_filename);
-  Image* surface_texture = Image_load(texture_filename);
+  surface_texture = Image_load(texture_filename);
   if (surface_texture) {
     printf("Done! \n");
   } else {
     printf("Fail! \n");
   }
 
-  /*
-  printf("loading vehicle texture (default) from %s ... ", vehicle_texture_filename);
-  Image* vehicle_texture = Image_load(vehicle_texture_filename);
-  if (vehicle_texture) {
-    printf("Done! \n");
-  } else {
-    printf("Fail! \n");
-  }
-  */
+
 
   //setting signal handler
   struct sigaction sa;
@@ -628,54 +603,46 @@ int main(int argc, char **argv) {
   struct sockaddr_in udp_server = {0};
 
   //Construct the world
-  WorldServer* ws = WorldServer_init(surface_elevation, surface_texture, 0.5, 0.5, 0.5);
+  ws = WorldServer_init(surface_elevation, surface_texture, 0.5, 0.5, 0.5);
   logger_verbose(__func__, "World Server initialized.\n");
 
-  TCPArgs* tcpArgs = (TCPArgs*) malloc(sizeof(TCPArgs));
-  tcpArgs->server_addr = tcp_server;
-  tcpArgs->surface_elevation = surface_elevation;
-  tcpArgs->surface_texture = surface_texture;
-  tcpArgs->server_port = SERVER_TCP_PORT;
-  tcpArgs->ws = ws;
 
-  UDPArgs* udpArgs = (UDPArgs*) malloc(sizeof(UDPArgs));
-  udpArgs->server_addr = udp_server;
+  tcp_server_addr = tcp_server;
+  tcp_server_port = SERVER_TCP_PORT;
+
+
+
+  udp_server_addr = udp_server;
 
   logger_verbose(__func__, "Creating TCP connection .\n");
 
-  createTCPConnection(tcpArgs);
+  createTCPConnection();
 
   logger_verbose(__func__, "Creating UDP connection.\n");
 
-  createUDPConnection(udpArgs);
+  createUDPConnection();
 
   //spawn tcp and udp thread
-  mainLoop(tcpArgs, udpArgs);
+  mainLoop();
 
   printf("I'm here.\n");
 
   //close socket
 
-  ret = close(server_desc);
+  ret = close(tcp_server_desc);
   ERROR_HELPER(ret, "Can't close server tcp socket.\n");
 
-  ret = close(udpArgs->server_desc);
+  ret = close(udp_server_desc);
   ERROR_HELPER(ret, "Can't close server udp socket.\n");
 
 
   //clean up
-  Image_free(tcpArgs->surface_elevation);
-  Image_free(tcpArgs->surface_texture);
-
-
   Image_free(surface_elevation);
   Image_free(surface_texture);
 
-  WorldServer_destroy(tcpArgs->ws);
 
-  free(tcpArgs->client_addr);
-  free(tcpArgs);
-  free(udpArgs);
+  WorldServer_destroy(ws);
+
 
   RandomId_destroy(randomId);
 

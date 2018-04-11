@@ -22,12 +22,11 @@ WorldServer* WorldServer_init(Image* surface_elevation,
 }
 
 
-int WorldServer_addClient(WorldServer* ws, Vehicle* v, struct sockaddr_in user_addr){
+int WorldServer_addClient(WorldServer* ws, Vehicle* v, ClientItem* ci){
     World_addVehicle(ws->w, v);
-    ClientItem* ci = (ClientItem*) malloc(sizeof(ClientItem));
     int id = v->id;
-    ci->id = id;
-    ci->user_addr = user_addr;
+    //ci->id = id;
+    //ci->user_addr = user_addr;
     List_append(&ws->clients, (ListItem*) ci);
     return id;
 

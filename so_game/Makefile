@@ -14,7 +14,6 @@ BINS=libso_game.a\
      so_game_server\
 
 OBJS = vec3.o\
-       client_list.o\
        linked_list.o\
        logger.o\
        random_id.o\
@@ -33,7 +32,6 @@ HEADERS=utils.h\
 	logger.h\
 	random_id.h\
 	image.h\
-	client_list.h\
 	linked_list.h\
 	grisonet.h\
 	so_game_protocol.h\

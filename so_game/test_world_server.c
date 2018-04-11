@@ -28,11 +28,22 @@ int main(int argc, char const * argv[]){
     struct sockaddr_in u1 = {0};
     struct sockaddr_in u2 = {0};
 
+    ClientItem* ci1 = (ClientItem*) malloc(sizeof(ClientItem));
+    ci1->id = 101;
+    ci1->socket = 123456;
+    ci1->user_addr = u1;
 
-    WorldServer_addClient(ws, v1, u1);
+    ClientItem* ci2 = (ClientItem*) malloc(sizeof(ClientItem));
+    ci2->id = 46;
+    ci2->socket = 4545;
+    ci2->user_addr = u2;
+
+
+
+    WorldServer_addClient(ws, v1, ci1);
     WorldServer_print(ws);
 
-    WorldServer_addClient(ws, v2, u2);
+    WorldServer_addClient(ws, v2, ci2);
     WorldServer_print(ws);
 
     WorldServer_detachClient(ws, 101);

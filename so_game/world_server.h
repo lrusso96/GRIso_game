@@ -18,7 +18,8 @@
 typedef struct ClientItem {
     struct sockaddr_in user_addr;
     int id;
-    pthread_t* tcp_thread;
+    int socket;
+    //pthread_t* tcp_thread; to handle server quit (later on)
 } ClientItem;
 
 typedef struct WorldServer {
@@ -36,7 +37,7 @@ WorldServer* WorldServer_init(Image* surface_elevation,
 	       float y_step,
 	       float z_step);
 
-int WorldServer_addClient(WorldServer* ws, Vehicle* v, struct sockaddr_in user_addr);
+int WorldServer_addClient(WorldServer* ws, Vehicle* v, ClientItem* ci);
 int WorldServer_detachClient(WorldServer* ws, int id);
 
 void WorldServer_destroy(WorldServer* ws);
