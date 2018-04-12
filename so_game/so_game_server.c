@@ -110,6 +110,8 @@ int postMapElevationToClient(ClientItem* ci){
 
   logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
 
+  free(img_packet_elevation_surface);
+
   return 1;
 }
 
@@ -164,6 +166,8 @@ int postMapTextureToClient(ClientItem* ci){
 
   logger_verbose(__func__, "[Server - Data] Bytes sent : %zu bytes.\n", msg_len);
 
+  free(img_packet_texture_surface);
+
   return 1;
 }
 
@@ -217,6 +221,8 @@ Image* getVehicleTextureFromClient(ClientItem* ci){
     logger_verbose(__func__, "Vehicle added to world server.\n");
 
     //Packet_free(&incoming_packet->header);
+    free(deserialized_packet);
+
     return player_texture;
 
   }else{
@@ -272,6 +278,8 @@ int postVehicleTextureToClient(ClientItem* ci, int id, Image* player_texture){
 
   logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
 
+  free(img_packet_pt);
+
   return 1;
 }
 
@@ -295,17 +303,23 @@ int getIdFromClient(ClientItem* ci){
   logger_verbose(__func__, "id_packet with : \ntype\t%d\nsize\t%d\nid\t%d\n",
 		 id_packet->header.type, id_packet->header.size, id_packet->id);
 
+    int id = 0;
+
   //Check if client satisfied game protocol
   if(id_packet->header.type == GetId && id_packet->id == -1){
     logger_verbose(__func__, "Header Check Passed.\n");
     logger_verbose(__func__, "A client required an id.\n");
 
-    return RandomId_getNext(randomId);
+    id =  RandomId_getNext(randomId);
   }
 
-  logger_verbose(__func__,"Header Check Failed.\n");
+    else{
+        logger_verbose(__func__,"Header Check Failed.\n");
+    }
 
-  return 0;
+    free(id_packet);
+
+  return id;
 }
 
 void postIdToClient(ClientItem* ci){
@@ -331,7 +345,7 @@ void postIdToClient(ClientItem* ci){
   logger_verbose(__func__, "[Server - Data] Bytes sent : %d bytes.\n", msg_len);
   logger_verbose(__func__, "[Server] Client #%d has joined the game.\n",id_packet->id);
 
-  //Packet_free(&id_packet->header);
+  free(id_packet);
 }
 
 
@@ -372,78 +386,84 @@ void* TCPWork(void* params){
                         char buf_rcv[BUFFER_SIZE];
                         int ph_len = sizeof(PacketHeader);
 
-                        size_t msg_len = griso_recv(ci->socket, buf_rcv, ph_len);
-                        ERROR_HELPER(msg_len, "Can't receive header packeth\n");
+                        while(true){
 
-                        logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
+                            size_t msg_len = griso_recv(ci->socket, buf_rcv, ph_len);
+                            ERROR_HELPER(msg_len, "Can't receive header packeth\n");
 
-                        PacketHeader* incoming_pckt=(PacketHeader*) buf_rcv;
-                        int size = incoming_pckt->size-ph_len;
+                            logger_verbose(__func__, "Bytes received : %d bytes.\n", msg_len);
 
-                        //Receive rest of packet
-                        if(incoming_pckt->type == Quit){
-                            msg_len = griso_recv(ci->socket, buf_rcv+ph_len, size);
-                            ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
+                            PacketHeader* incoming_pckt=(PacketHeader*) buf_rcv;
+                            int size = incoming_pckt->size-ph_len;
 
-                            IdPacket* deserialized_packet = (IdPacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-                            int id = deserialized_packet->id;
-                            logger_verbose(__func__, "Bytes received : %d bytes.\n",msg_len);
-                            logger_verbose(__func__, "Quit packet with :\n\tid = %d\n", id);
+                            //Receive rest of packet
+                            if(incoming_pckt->type == Quit){
+                                msg_len = griso_recv(ci->socket, buf_rcv+ph_len, size);
+                                ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
 
-                            //free not needed
-                            //Packet_free(&(deserialized_packet->header));
+                                IdPacket* deserialized_packet = (IdPacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
+                                int id = deserialized_packet->id;
+                                logger_verbose(__func__, "Bytes received : %d bytes.\n",msg_len);
+                                logger_verbose(__func__, "Quit packet with :\n\tid = %d\n", id);
 
-                            WorldServer_detachClient(ws, id);
-                            free(deserialized_packet);
+                                //free not needed
+                                //Packet_free(&(deserialized_packet->header));
 
-                        }
+                                WorldServer_detachClient(ws, id);
+                                free(deserialized_packet);
 
-                        else if(incoming_pckt->type == GetTexture){
-                            msg_len = griso_recv(ci->socket, buf_rcv+ph_len, size);
-                            ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
+                                return NULL;
 
-                            ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
-                            int id = deserialized_packet->id;
-                            Image* im = NULL;
-
-                            World* w = ws->w;
-                            ListItem* item=w->vehicles.first;
-                            while(item){
-                                Vehicle* v=(Vehicle*)item;
-                                if(v->id == id){
-                                    im = v->texture;
-                                    break;
-                                }
-                                item = item->next;
                             }
 
+                            else if(incoming_pckt->type == GetTexture){
+                                msg_len = griso_recv(ci->socket, buf_rcv+ph_len, size);
+                                ERROR_HELPER(msg_len, "Can't receive end of packet.\n");
 
-/////////////// wrap this
+                                ImagePacket* deserialized_packet = (ImagePacket*)Packet_deserialize(buf_rcv, msg_len+ph_len);
+                                int id = deserialized_packet->id;
+                                Image* im = NULL;
 
-                            //Send player texture packet to client
-                            char img_packet_player_texture[BUFFER_SIZE];
-                            PacketHeader player_texture_header;
+                                World* w = ws->w;
+                                ListItem* item=w->vehicles.first;
+                                while(item){
+                                    Vehicle* v=(Vehicle*)item;
+                                    if(v->id == id){
+                                        im = v->texture;
+                                        break;
+                                    }
+                                    item = item->next;
+                                }
 
-                            player_texture_header.type = PostTexture;
+                                free(deserialized_packet);
 
-                            ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
 
-                            img_packet_pt->header = player_texture_header;
-                            img_packet_pt->id = id;
-                            img_packet_pt->image = im;
+    /////////////// wrap this
 
-                            size = Packet_serialize(img_packet_player_texture, &(img_packet_pt->header));
+                                //Send player texture packet to client
+                                char img_packet_player_texture[BUFFER_SIZE];
+                                PacketHeader player_texture_header;
 
-                            size_t msg_len = griso_send(ci->socket, img_packet_player_texture, size);
-                            ERROR_HELPER(msg_len, "Can't send player texture packet to client.\n");
+                                player_texture_header.type = PostTexture;
 
-                            logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
+                                ImagePacket* img_packet_pt = (ImagePacket*) malloc(sizeof(ImagePacket));
 
-                            //postVehicleTextureToClient(ci, id, im);
+                                img_packet_pt->header = player_texture_header;
+                                img_packet_pt->id = id;
+                                img_packet_pt->image = im;
+
+                                size = Packet_serialize(img_packet_player_texture, &(img_packet_pt->header));
+
+                                size_t msg_len = griso_send(ci->socket, img_packet_player_texture, size);
+                                ERROR_HELPER(msg_len, "Can't send player texture packet to client.\n");
+
+                                logger_verbose(__func__, "Bytes sent : %zu bytes.\n", msg_len);
+
+                                free(img_packet_pt);
+
+                            }
 
                         }
-
-
 
                     }
                 }
@@ -570,7 +590,11 @@ void* UDPSenderThread(void* args){
             int sent = sendto(udp_server_desc, buf_send, size, 0, (struct sockaddr *) &(ci->clientStorage), ci->addr_size);
             logger_verbose(__func__, "sent %d bytes of world update to client %d", sent, ci->id);
         }
+
+
     }
+
+    Packet_free(&(wup->header));
 
     return NULL;
 }
@@ -627,12 +651,11 @@ void* UDPReceiverThread(void* args){
         //now update clientitem if needed
 
 
-
-
-
         pthread_mutex_unlock(&(ws->mutex));
         logger_verbose(__func__, "packet received:\n\ttype = %d\n\tsize = %d\n\tid = %d\n\tx = %fn\ty = %fn\ttheta = %f",
         v_packet->header.type, v_packet->header.size, v_packet->id, v_packet->x, v_packet->y, v_packet->theta);
+
+        free(v_packet);
 
         sleep(1);
     }
@@ -688,8 +711,13 @@ void cleanup(void){
     ret = pthread_cancel(UDP_receiver_thread);
     ERROR_HELPER(ret, "pthread_cancel to UDP_receiver failed");
     ret = pthread_join(UDP_receiver_thread, NULL);
+    ret = pthread_cancel(UDP_sender_thread);
+    ERROR_HELPER(ret, "pthread_cancel to UDP_sender failed");
+    ret = pthread_join(UDP_sender_thread, NULL);
 
     pthread_attr_destroy(&attr1);
+    pthread_attr_destroy(&attr2);
+
     logger_verbose(__func__, "successful join on threads");
 
     /*

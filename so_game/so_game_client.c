@@ -294,6 +294,9 @@ int postVehicleTexture(Image* texture, int id){
     ERROR_HELPER(msg_len, "Can't send vehicle texture to server.\n");
 
     logger_verbose(__func__, "Bytes sent : %zu bytes.", msg_len);
+
+    free(request);
+
     return 0;
 }
 
