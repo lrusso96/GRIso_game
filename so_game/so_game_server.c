@@ -409,7 +409,9 @@ void* TCPWork(void* params){
                                 //free not needed
                                 //Packet_free(&(deserialized_packet->header));
 
+                                pthread_mutex_lock(&(ws->mutex));
                                 WorldServer_detachClient(ws, id);
+                                pthread_mutex_unlock(&(ws->mutex));
                                 free(deserialized_packet);
 
                                 return NULL;
@@ -545,7 +547,7 @@ void* UDPSenderThread(void* args){
     wup->header = ph;
 
     while(is_up){
-        sleep(2);
+        usleep(500*1000);
 
         if(ws->clients.size==0){
             continue;
@@ -553,6 +555,8 @@ void* UDPSenderThread(void* args){
 
 
         pthread_mutex_lock(&(ws->mutex));
+
+        World_update(ws->w);
 
         //set num_vehicles (world size can't change now!)
         wup->num_vehicles = ws->clients.size;
@@ -620,6 +624,8 @@ void* UDPReceiverThread(void* args){
 
     while(is_up){
 
+        usleep(100*1000);
+
         int nBytes = recvfrom(udpSocket, buf_recv, BUFFER_SIZE, 0, (struct sockaddr *)&serverStorage, &addr_size);
         logger_verbose(__func__, "received %d bytes", nBytes);
 
@@ -656,8 +662,6 @@ void* UDPReceiverThread(void* args){
         v_packet->header.type, v_packet->header.size, v_packet->id, v_packet->x, v_packet->y, v_packet->theta);
 
         free(v_packet);
-
-        sleep(1);
     }
     return NULL;
 }

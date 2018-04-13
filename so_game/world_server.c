@@ -61,9 +61,11 @@ int WorldServer_detachClient(WorldServer* ws, int id){
 
 int WorldServer_updateClient(WorldServer* ws, int id, float x, float y, float t){
     Vehicle* v = World_getVehicle(ws->w, id);
-    v->x = x;
-    v->y = y;
-    v->theta = t;
+    if(v){
+        v->x = x;
+        v->y = y;
+        v->theta = t;
+    }
     return 0;
 }
 

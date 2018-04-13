@@ -424,7 +424,7 @@ void* UDPSenderThread(void* args){
     while(running){
 
         //todo decide sleeping time
-        sleep(2);
+        usleep(1000*300);
 
         vpckt->req_number = req_number++;
 
@@ -459,8 +459,10 @@ void applyUpdates(WorldUpdatePacket* wup){
 
         int id = cu.id;
         //skip my id !
+        /*
         if(id == my_id)
             continue;
+        */
 
         float x = cu.x;
         float y = cu.y;
@@ -472,7 +474,6 @@ void applyUpdates(WorldUpdatePacket* wup){
         //if not, request his texture and add to world
 
         int val = WorldExtended_HasIdAndTexture(we, id);
-        printf("-------------------VAL = %d\n\n\n\n", val);
         if(val==-1){
             logger_verbose(__func__, "vehicle with id %d joined the game", id);
             Image * t = getVehicleTexture(id);
@@ -516,7 +517,7 @@ void* UDPReceiverThread(void* args){
 
     while(running){
 
-        sleep(2);
+        usleep(1000*300);
 
         int nBytes = recvfrom(socket_udp, buf_recv, BUFFER_SIZE, 0, NULL, NULL);
         logger_verbose(__func__, "received %d bytes", nBytes);

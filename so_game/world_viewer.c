@@ -102,7 +102,7 @@ void reshape(int width, int height) {
 
 void idle(void) {
   World_update(viewer.world);
-  usleep(30000);
+  usleep(10000);
   glutPostRedisplay();
 
   // decay the commands

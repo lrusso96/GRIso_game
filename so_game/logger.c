@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define VERBOSE 0
+#define VERBOSE 1
 #define ERROR 1
 
 void logger_verbose(const char* who, const char *fmt, ...){
