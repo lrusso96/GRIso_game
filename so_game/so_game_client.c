@@ -538,6 +538,7 @@ void* UDPReceiverThread(void* args){
         if(ph->type == Quit){
             IdPacket* ip = (IdPacket*) Packet_deserialize(buf_recv, nBytes);
             int id = ip->id;
+
             logger_verbose(__func__, "Vehicle %d disconnected. I detach it from my world", id);
             int id_ret = WorldExtended_detachVehicle(we, id);
             logger_verbose(__func__, "Detached vehicle %d", id_ret);

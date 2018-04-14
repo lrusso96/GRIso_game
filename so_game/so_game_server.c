@@ -414,6 +414,33 @@ void* TCPWork(void* params){
                                 pthread_mutex_unlock(&(ws->mutex));
                                 free(deserialized_packet);
 
+
+                                char buf_send[BUFFER_SIZE];
+
+                                PacketHeader ph;
+                                ph.type = Quit;
+
+                                IdPacket* id_packet = (IdPacket*) malloc(sizeof(IdPacket));
+                                id_packet->header = ph;
+                                id_packet->id = id;
+
+                                size = Packet_serialize(buf_send, &(id_packet->header));
+
+                                ListItem* item = ws->clients.first;
+                                while(item){
+                                    ClientItem* ci=(ClientItem*)item;
+                                    item = item->next;
+
+                                    if(ci->id == id)
+                                        continue;
+
+                                    int sent = sendto(udp_server_desc, buf_send, size, 0, (struct sockaddr *) &(ci->clientStorage), ci->addr_size);
+                                    logger_verbose(__func__, "sent %d bytes of quit of client %d to client %d", sent, id, ci->id);
+                                }
+
+                                free(id_packet);
+
+
                                 return NULL;
 
                             }
@@ -575,7 +602,7 @@ void* UDPSenderThread(void* args){
             ClientUpdate* cu = &(wup->updates[i++]);
             cu->id = ci->id;
             WorldServer_getClientInfo(ws, cu->id, &(cu->x), &(cu->y), &(cu->theta));
-            logger_verbose(__func__,"info: %d, %f, %f, %f", cu->id, cu->y, cu->theta);
+            logger_verbose(__func__,"info: %d, %f, %f, %f", cu->id, cu->x, cu->y, cu->theta);
         }
 
         logger_verbose(__func__,"end my loop");
@@ -731,6 +758,7 @@ void cleanup(void){
      *
      * join udp receiver too
      */
+
 
     ret = close(tcp_server_desc);
     ERROR_HELPER(ret, "Can't close server tcp socket.\n");

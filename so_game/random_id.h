@@ -5,6 +5,9 @@
 /*
  * This handles in critical section the unique_id getter method.
  *
+ * For now it only cares of updating (++) the last id. The id is unique per connection
+ * and is not recycled
+ *
  */
 
 typedef struct RandomId{
