@@ -33,6 +33,12 @@ Periodically
 - updates the viewer (provided)
 - reads either keyboard or joystick
 
+## How to run
+
+First of all you need to compile it via make command.
+Then you can run server: . /server.sh
+And for client: . /client1.sh
+
 ## Authors
 - [Luigi Russo](https://gitlab.com/lrusso96)
 - [Matteo Salvino](https://gitlab.com/MatteoSalvino)
