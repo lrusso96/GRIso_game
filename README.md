@@ -35,9 +35,15 @@ Periodically
 
 ## How to run
 
-First of all you need to compile it via make command.
-Then you can run server: . /server.sh
-And for client: . /client1.sh
+First of all you need to compile it via <b>make</b> command.
+
+Then you can run server:
+
+    . /server.sh
+
+And for client:
+    
+    . /client1.sh
 
 ## Authors
 - [Luigi Russo](https://gitlab.com/lrusso96)
