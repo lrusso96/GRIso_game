@@ -40,9 +40,9 @@ WorldServer* WorldServer_init(Image* surface_elevation, Image* surface_texture, 
 int WorldServer_addClient(WorldServer* ws, Vehicle* v, ClientItem* ci);
 int WorldServer_detachClient(WorldServer* ws, int id);
 //apply updates to vehicle in the world
-int WorldServer_updateClient(WorldServer* ws, int id, float x, float y, float t);
+int WorldServer_updateClient(WorldServer* ws, int id, float x, float y, float t, float rf, float tf);
 //retrieve info of some vehcile (used to create a "epoch state"
-int WorldServer_getClientInfo(WorldServer* ws, int id, float* x, float* y, float* t);
+int WorldServer_getClientInfo(WorldServer* ws, int id, float* x, float* y, float* t, float* rf, float* tf);
 //destroy world. Valgrind-tested
 void WorldServer_destroy(WorldServer* ws);
 

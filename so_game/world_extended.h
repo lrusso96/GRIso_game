@@ -52,7 +52,7 @@ void WorldExtended_getVehicleForcesUpdate(WorldExtended* we, Vehicle* v, float* 
 //todo setForces
 
 //getXYT
-void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float* y, float* t);
+void WorldExtended_getVehicleXYTPlus(WorldExtended* we, Vehicle* v, float* x, float* y, float* t, float* rf, float* tf);
 
 //todo setXYT
-void WorldExtended_setVehicleXYT(WorldExtended* we, int id, float x, float y, float t);
+void WorldExtended_setVehicleXYTPlus(WorldExtended* we, int id, float x, float y, float t, float rf, float tf);

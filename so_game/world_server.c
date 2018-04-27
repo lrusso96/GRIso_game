@@ -59,21 +59,25 @@ int WorldServer_detachClient(WorldServer* ws, int id){
     return id;
 }
 
-int WorldServer_updateClient(WorldServer* ws, int id, float x, float y, float t){
+int WorldServer_updateClient(WorldServer* ws, int id, float x, float y, float t, float rf, float tf){
     Vehicle* v = World_getVehicle(ws->w, id);
     if(v){
         v->x = x;
         v->y = y;
         v->theta = t;
+        v->rotational_force = rf;
+        v->translational_force = tf;
     }
     return 0;
 }
 
-int WorldServer_getClientInfo(WorldServer* ws, int id, float* x, float* y, float* t){
+int WorldServer_getClientInfo(WorldServer* ws, int id, float* x, float* y, float* t, float* rf, float* tf){
     Vehicle* v = World_getVehicle(ws->w, id);
     *x = v->x;
     *y = v->y;
     *t = v->theta;
+    *rf = v->rotational_force;
+    *tf = v->translational_force;
     return 0;
 }
 

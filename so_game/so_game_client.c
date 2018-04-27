@@ -459,14 +459,17 @@ void applyUpdates(WorldUpdatePacket* wup){
 
         int id = cu.id;
         //skip my id !
-        /*
+
         if(id == my_id)
             continue;
-        */
+
 
         float x = cu.x;
         float y = cu.y;
         float theta = cu.theta;
+        float rf = cu.rotational_force;
+        float tf = cu.translational_force;
+
 
 
         //check if it is already in the world
@@ -490,7 +493,7 @@ void applyUpdates(WorldUpdatePacket* wup){
         }
 
         //update its position
-        WorldExtended_setVehicleXYT(we, id, x, y, theta);
+        WorldExtended_setVehicleXYTPlus(we, id, x, y, theta, rf, tf);
 
         World_update(we->w);
 

@@ -106,6 +106,8 @@ void WorldExtended_vehicleUpdatePacket_init(WorldExtended* we, VehicleUpdatePack
             p->x = v->x;
             p->y = v->y;
             p->theta = v->theta;
+            p->rotational_force = v->rotational_force;
+            p->translational_force = v->translational_force;
             ret = sem_post(&(lh->sem));
             ERROR_HELPER(ret, "sem_post failed");
             return;
@@ -143,7 +145,7 @@ void WorldExtended_getVehicleForcesUpdate(WorldExtended* we, Vehicle* v, float* 
     ERROR_HELPER(ret, "sem_post failed");
 }
 
-void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float* y, float* t){
+void WorldExtended_getVehicleXYTPlus(WorldExtended* we, Vehicle* v, float* x, float* y, float* t, float* rf, float* tf){
 
     int ret;
     ListHead* lh = &(we->w->vehicles);
@@ -160,6 +162,8 @@ void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float*
             *x=v->x;
             *y=v->y;
             *t=v->theta;
+            *rf = v->rotational_force;
+            *tf = v->translational_force;
             ret = sem_post(&(lh->sem));
             ERROR_HELPER(ret, "sem_post failed");
             return;
@@ -171,7 +175,7 @@ void WorldExtended_getVehicleXYT(WorldExtended* we, Vehicle* v, float* x, float*
 }
 
 
-void WorldExtended_setVehicleXYT(WorldExtended* we, int id, float x, float y, float t){
+void WorldExtended_setVehicleXYTPlus(WorldExtended* we, int id, float x, float y, float t, float rf, float tf){
 
     int ret;
     ListHead* lh = &(we->w->vehicles);
@@ -188,6 +192,8 @@ void WorldExtended_setVehicleXYT(WorldExtended* we, int id, float x, float y, fl
             v->x = x;
             v->y = y;
             v->theta = t;
+            v->rotational_force = rf;
+            v->translational_force = tf;
             ret = sem_post(&(lh->sem));
             ERROR_HELPER(ret, "sem_post failed");
             return;
