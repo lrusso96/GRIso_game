@@ -101,17 +101,18 @@ void WorldExtended_vehicleUpdatePacket_init(WorldExtended* we, VehicleUpdatePack
         Vehicle* vv = (Vehicle*)item;
 
         if(vv==v){
-            p->rotational_force = v->rotational_force;
-            p->translational_force = v->translational_force;
+	pthread_mutex_lock(&v->mutex);
             p->x = v->x;
             p->y = v->y;
             p->theta = v->theta;
-            p->rotational_force = v->rotational_force;
-            p->translational_force = v->translational_force;
+            p->rotational_force = v->rotational_force_update;
+            p->translational_force = v->translational_force_update;
+	    pthread_mutex_unlock(&v->mutex);
             ret = sem_post(&(lh->sem));
             ERROR_HELPER(ret, "sem_post failed");
             return;
         }
+
         item=item->next;
     }
     ret = sem_post(&(lh->sem));
@@ -157,17 +158,18 @@ void WorldExtended_getVehicleXYTPlus(WorldExtended* we, Vehicle* v, float* x, fl
     ListItem* item = lh->first;
     while(item){
         Vehicle* vv = (Vehicle*)item;
-
+	pthread_mutex_lock(&vv->mutex);
         if(vv==v){
             *x=v->x;
             *y=v->y;
             *t=v->theta;
-            *rf = v->rotational_force;
-            *tf = v->translational_force;
+            *rf = v->rotational_force_update;
+            *tf = v->translational_force_update;
             ret = sem_post(&(lh->sem));
             ERROR_HELPER(ret, "sem_post failed");
             return;
         }
+	pthread_mutex_unlock(&v->mutex);
         item=item->next;
     }
     ret = sem_post(&(lh->sem));
@@ -187,17 +189,20 @@ void WorldExtended_setVehicleXYTPlus(WorldExtended* we, int id, float x, float y
     ListItem* item = lh->first;
     while(item){
         Vehicle* v = (Vehicle*)item;
-
+	
         if(v->id==id){
+	pthread_mutex_lock(&v->mutex);
             v->x = x;
             v->y = y;
             v->theta = t;
-            v->rotational_force = rf;
-            v->translational_force = tf;
+            v->rotational_force_update = rf;
+            v->translational_force_update = tf;
+	pthread_mutex_unlock(&v->mutex);
             ret = sem_post(&(lh->sem));
             ERROR_HELPER(ret, "sem_post failed");
             return;
         }
+	
         item=item->next;
     }
     ret = sem_post(&(lh->sem));

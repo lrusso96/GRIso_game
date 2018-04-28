@@ -1,5 +1,6 @@
 #pragma once
 
+#include <pthread.h>
 #include <stdbool.h>
 
 #include "so_game_protocol.h"

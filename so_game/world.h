@@ -4,6 +4,7 @@
 #include "surface.h"
 #include "vehicle.h"
 #include "linked_list.h"
+#include <pthread.h>
 
 typedef struct World {
   ListHead vehicles; // list of vehicles

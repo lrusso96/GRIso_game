@@ -55,9 +55,15 @@ void World_update(World* w) {
   ListItem* item=w->vehicles.first;
   while(item){
     Vehicle* v=(Vehicle*)item;
+    pthread_mutex_lock(&v->mutex);
+    // decay the commands
+    v->translational_force_update *= 0.999;
+    v->rotational_force_update *= 0.7;
     if (! Vehicle_update(v, delta*w->time_scale)){
       Vehicle_reset(v);
     }
+
+    pthread_mutex_unlock(&v->mutex);
     item=item->next;
   }
   w->last_update = current_time;

@@ -1,0 +1,4742 @@
+readreadrows:256, cols: 256
+magic number: [P5]
+Done! 
+loading texture image from images/maze.ppm ... readreadrows:256, cols: 256
+magic number: [P6]
+Done! 
+
+[main]  World Server initialized.
+
+
+[main]  Creating TCP connection .
+
+
+[createTCPConnection]  [Server] TCP socket successfully created.
+
+
+[main]  Creating UDP connection.
+
+
+[createUDPConnection]  UDP socket successfully created
+
+[mainLoop]  Incoming connection accepted.
+
+
+[getIdFromClient]  Receiving an id request from client.
+
+
+[getIdFromClient]  Bytes received : 12 bytes.
+
+
+[getIdFromClient]  id_packet with : 
+type	1
+size	12
+id	-1
+
+
+[getIdFromClient]  Header Check Passed.
+
+
+[getIdFromClient]  A client required an id.
+
+
+[postIdToClient]  [Server] Bytes written in the buffer 12.
+
+
+[postIdToClient]  [Server - Data] Bytes sent : 12 bytes.
+
+
+[postIdToClient]  [Server] Client #1 has joined the game.
+
+
+[postMapElevationToClient]  [Server] Waiting elevation surface request from client #1.
+
+
+[postMapElevationToClient]  Bytes received : 12 bytes.
+
+
+[postMapElevationToClient]  incoming_packet with :
+type	3
+size	12
+
+
+[postMapElevationToClient]  Header Check passed.
+
+
+[postMapElevationToClient]  Sending elevation surface to client #1.
+
+
+[postMapElevationToClient]  img_packet_elevation_surface with :
+type	5
+size	0
+
+
+[postMapElevationToClient]  Serialize img_packet_elevation_surface.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[postMapElevationToClient]  Bytes written in the buffer : 65575.
+
+
+[postMapElevationToClient]  Bytes sent : 65575 bytes.
+
+
+[postMapTextureToClient]  Waiting texture surface request from client #1.
+
+
+[postMapTextureToClient]  Bytes received : 12 bytes.
+
+
+[postMapTextureToClient]  incoming_packet with :
+type	2
+size	12
+.
+
+[postMapTextureToClient]  Header Check passed.
+
+
+[postMapTextureToClient]  Sending texture surface to client #1.
+
+
+[postMapTextureToClient]  img_packet_texture_surface with :
+type	4
+size	0
+
+
+[postMapTextureToClient]  Serialize img_packet_texture_surface.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[postMapTextureToClient]  Bytes written in the buffer : 196647.
+
+
+[postMapTextureToClient]  [Server - Data] Bytes sent : 196647 bytes.
+
+
+[getVehicleTextureFromClient]  Receiving player texture from client #1.
+
+
+[getVehicleTextureFromClient]  Bytes received : 24 bytes.
+
+
+[getVehicleTextureFromClient]  incoming_packet with : 
+type	4
+size	196647
+.
+
+[getVehicleTextureFromClient]  Header Check Passed.
+
+
+[getVehicleTextureFromClient]  Bytes received : 196623 bytes.
+
+readrows:256, cols: 256
+magic number: [P6]
+
+[getVehicleTextureFromClient]  deserialized_packet with : 
+type	4
+size	196647
+id	1
+
+
+[getVehicleTextureFromClient]  Vehicle added to world server.
+
+
+[postVehicleTextureToClient]  Waiting player texture request from client #1.
+
+
+[postVehicleTextureToClient]  Bytes received : 12 bytes.
+
+
+[postVehicleTextureToClient]  incoming_packet with : 
+type	2
+size	12
+.
+
+[postVehicleTextureToClient]  Header Check Passed.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[postVehicleTextureToClient]  Bytes sent : 196647 bytes.
+
+
+[TCPWork]  Listening update packets from client.
+
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent -1 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[mainLoop]  Incoming connection accepted.
+
+
+[getIdFromClient]  Receiving an id request from client.
+
+
+[getIdFromClient]  Bytes received : 12 bytes.
+
+
+[getIdFromClient]  id_packet with : 
+type	1
+size	12
+id	-1
+
+
+[getIdFromClient]  Header Check Passed.
+
+
+[getIdFromClient]  A client required an id.
+
+
+[postIdToClient]  [Server] Bytes written in the buffer 12.
+
+
+[postIdToClient]  [Server - Data] Bytes sent : 12 bytes.
+
+
+[postIdToClient]  [Server] Client #2 has joined the game.
+
+
+[postMapElevationToClient]  [Server] Waiting elevation surface request from client #2.
+
+
+[postMapElevationToClient]  Bytes received : 12 bytes.
+
+
+[postMapElevationToClient]  incoming_packet with :
+type	3
+size	12
+
+
+[postMapElevationToClient]  Header Check passed.
+
+
+[postMapElevationToClient]  Sending elevation surface to client #2.
+
+
+[postMapElevationToClient]  img_packet_elevation_surface with :
+type	5
+size	0
+
+
+[postMapElevationToClient]  Serialize img_packet_elevation_surface.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[postMapElevationToClient]  Bytes written in the buffer : 65575.
+
+
+[postMapElevationToClient]  Bytes sent : 65575 bytes.
+
+
+[postMapTextureToClient]  Waiting texture surface request from client #2.
+
+
+[postMapTextureToClient]  Bytes received : 12 bytes.
+
+
+[postMapTextureToClient]  incoming_packet with :
+type	2
+size	12
+.
+
+[postMapTextureToClient]  Header Check passed.
+
+
+[postMapTextureToClient]  Sending texture surface to client #2.
+
+
+[postMapTextureToClient]  img_packet_texture_surface with :
+type	4
+size	0
+
+
+[postMapTextureToClient]  Serialize img_packet_texture_surface.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[postMapTextureToClient]  Bytes written in the buffer : 196647.
+
+
+[postMapTextureToClient]  [Server - Data] Bytes sent : 196647 bytes.
+
+
+[getVehicleTextureFromClient]  Receiving player texture from client #2.
+
+
+[getVehicleTextureFromClient]  Bytes received : 24 bytes.
+
+
+[getVehicleTextureFromClient]  incoming_packet with : 
+type	4
+size	196647
+.
+
+[getVehicleTextureFromClient]  Header Check Passed.
+
+
+[getVehicleTextureFromClient]  Bytes received : 196623 bytes.
+
+readrows:256, cols: 256
+magic number: [P6]
+
+[getVehicleTextureFromClient]  deserialized_packet with : 
+type	4
+size	196647
+id	2
+
+
+[getVehicleTextureFromClient]  Vehicle added to world server.
+
+
+[postVehicleTextureToClient]  Waiting player texture request from client #2.
+
+
+[postVehicleTextureToClient]  Bytes received : 12 bytes.
+
+
+[postVehicleTextureToClient]  incoming_packet with : 
+type	2
+size	12
+.
+
+[postVehicleTextureToClient]  Header Check Passed.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[postVehicleTextureToClient]  Bytes sent : 196647 bytes.
+
+
+[TCPWork]  Listening update packets from client.
+
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent -1 bytes of world update to client 2
+
+[TCPWork]  Bytes received : 8 bytes.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[TCPWork]  Bytes sent : 196647 bytes.
+
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[TCPWork]  Bytes received : 8 bytes.
+
+cast
+memcopy
+forward address
+image serializationend
+
+[TCPWork]  Bytes sent : 196647 bytes.
+
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.940075n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.817917n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.817917, 64.000000, 0.000000	0.000000, -0.099004
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.691521n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.691521, 64.000000, 0.000000	0.000000, -0.098412
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.543232n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.543232, 64.000000, 0.000000	0.000000, -0.097725
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.419483n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.419483, 64.000000, 0.000000	0.000000, -0.097140
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.273754n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.273754, 64.000000, 0.000000	0.000000, -0.096462
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.145020n	y = 64.000000n	theta = -0.009584
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.145020, 64.000000, -0.009584	-0.049000, -0.095885
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.025867n	y = 64.001762n	theta = -0.017274
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.025867, 64.001762, -0.017274	-0.005765, -0.095311
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.868076n	y = 64.004509n	theta = -0.017413
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.868076, 64.004509, -0.017413	-0.000475, -0.094646
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.747036n	y = 64.006615n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.747036, 64.006615, -0.017414	-0.000080, -0.094174
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.589680n	y = 64.009354n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.589680, 64.009354, -0.017414	-0.000009, -0.093610
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.443073n	y = 64.011909n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.443073, 64.011909, -0.017414	-0.000001, -0.092957
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.364391n	y = 64.013283n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.364391, 64.013283, -0.017414	-0.000000, 0.007300
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.360054n	y = 64.013351n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.360054, 64.013351, -0.017414	-0.000000, 0.007249
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.360027n	y = 64.013351n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.360027, 64.013351, -0.017414	-0.000000, 0.007206
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.360027n	y = 64.013351n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.360027, 64.013351, -0.017414	-0.000000, 0.007170
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.374294n	y = 64.013100n	theta = -0.017414
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.374294, 64.013100, -0.017414	-0.000000, 0.106927
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.516300n	y = 64.010635n	theta = -0.026816
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.516300, 64.010635, -0.026816	-0.049000, 0.106181
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.666149n	y = 64.005836n	theta = -0.034337
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.666149, 64.005836, -0.034337	-0.005765, 0.105545
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.666149, 64.005836, -0.034337	-0.005765, 0.105545
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.808662n	y = 63.998714n	theta = -0.143080
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.808662, 63.998714, -0.143080	-0.482288, 0.104913
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.969353n	y = 63.943840n	theta = -0.632515
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.969353, 63.943840, -0.632515	-0.393652, 0.104181
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.072762n	y = 63.836369n	theta = -0.965133
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.072762, 63.836369, -0.965133	-0.063120, 0.103558
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.147633n	y = 63.721405n	theta = -1.005790
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.147633, 63.721405, -1.005790	-0.007426, 0.102938
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.225414n	y = 63.598579n	theta = -1.006498
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.225414, 63.598579, -1.006498	-0.000612, 0.102220
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.292202n	y = 63.493061n	theta = -1.006503
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.292202, 63.493061, -1.006503	-0.000072, 0.101608
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.370724n	y = 63.369003n	theta = -1.006503
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.370724, 63.369003, -1.006503	-0.000006, 0.100899
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.440094n	y = 63.257977n	theta = -1.017531
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.518021n	y = 63.131718n	theta = -1.017922
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.518021, 63.131718, -1.017922	-0.000969, 0.099595
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.645195n	y = 62.925621n	theta = -1.026627
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.645195, 62.925621, -1.026627	-0.049080, 0.198202
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.761501n	y = 62.731590n	theta = -1.032454
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.761501, 62.731590, -1.032454	-0.005774, 0.197016
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.916759n	y = 62.469391n	theta = -1.097937
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.916759, 62.469391, -1.097937	-0.237076, 0.195641
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 64.005264n	y = 62.217442n	theta = -1.481064
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 64.005264, 62.217442, -1.481064	-0.336041, 0.194470
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.978722n	y = 61.931145n	theta = -1.813515
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.978722, 61.931145, -1.813515	-0.044145, 0.193112
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.921864n	y = 61.712132n	theta = -1.829279
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.921864, 61.712132, -1.829279	-0.005194, 0.191957
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.834702n	y = 61.382812n	theta = -1.829600
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.834702, 61.382812, -1.829600	-0.000428, 0.290217
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.740192n	y = 61.025833n	theta = -1.829602
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.740192, 61.025833, -1.829602	-0.000050, 0.288481
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.640408n	y = 60.648914n	theta = -1.829602
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.640408, 60.648914, -1.829602	-0.000004, 0.186667
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.586624n	y = 60.445751n	theta = -1.829602
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.586624, 60.445751, -1.829602	-0.000000, -0.014150
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.578987n	y = 60.416897n	theta = -1.829602
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.578987, 60.416897, -1.829602	-0.000000, -0.113852
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.613731n	y = 60.548126n	theta = -1.829602
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.613731, 60.548126, -1.829602	-0.000000, -0.113170
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.656021n	y = 60.707851n	theta = -1.819681
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.656021, 60.707851, -1.819681	0.049000, -0.112380
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.690956n	y = 60.847881n	theta = -1.813616
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.690956, 60.847881, -1.813616	0.005765, -0.111708
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.726250n	y = 60.995167n	theta = -1.742739
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.726250, 60.995167, -1.742739	0.226785, -0.110928
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.733147n	y = 61.136925n	theta = -1.387995
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.733147, 61.136925, -1.387995	0.434831, -0.110264
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.675308n	y = 61.294415n	theta = -1.087126
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.675308, 61.294415, -1.087126	0.035810, -0.109495
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.616356n	y = 61.404022n	theta = -1.073256
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.616356, 61.404022, -1.073256	0.004213, -0.108840
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.528999n	y = 61.564785n	theta = -1.072972
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.528999, 61.564785, -1.072972	0.000347, -0.108080
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.424152n	y = 61.757702n	theta = -1.062793
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.424152, 61.757702, -1.062793	0.049041, -0.206934
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.279667n	y = 62.013962n	theta = -1.055408
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.279667, 62.013962, -1.055408	0.004039, -0.205490
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 63.142475n	y = 62.256126n	theta = -1.055355
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 63.142475, 62.256126, -1.055355	0.000475, -0.204260
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.988907n	y = 62.527203n	theta = -1.055354
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.988907, 62.527203, -1.055354	0.000056, -0.302638
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.988907, 62.527203, -1.055354	0.000056, -0.302638
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.765079n	y = 62.918701n	theta = -1.046056
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.765079, 62.918701, -1.046056	0.016812, -0.300526
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.565750n	y = 63.262787n	theta = -1.045599
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.565750, 63.262787, -1.045599	0.341978, -0.298727
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 62.259529n	y = 63.677910n	theta = -0.647015
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 62.259529, 63.677910, -0.647015	0.394853, -0.296939
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 61.830242n	y = 63.870304n	theta = -0.055676
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 61.830242, 63.870304, -0.055676	0.298084, -0.295458
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 61.402531n	y = 63.824898n	theta = 0.269242
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 61.402531, 63.824898, 0.269242	0.050099, -0.194183
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 61.153915n	y = 63.748882n	theta = 0.319904
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 61.153915, 63.748882, 0.319904	0.005894, -0.093420
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 61.033276n	y = 63.709713n	theta = 0.301130
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 61.033276, 63.709713, 0.301130	-0.023317, -0.092861
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 60.913628n	y = 63.672726n	theta = 0.299301
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 60.913628, 63.672726, 0.299301	-0.001920, -0.092213
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 60.787884n	y = 63.633926n	theta = 0.299286
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 60.787884, 63.633926, 0.299286	-0.000158, -0.091570
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 60.680500n	y = 63.600792n	theta = 0.299286
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 60.680500, 63.600792, 0.299286	-0.000019, -0.091022
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 60.542801n	y = 63.558304n	theta = 0.299286
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  info: 2, 60.542801, 63.558304, 0.299286	-0.000002, -0.090386
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 80 bytes
+
+[UDPSenderThread]  sent 80 bytes of world update to client 1
+
+[UDPSenderThread]  sent 80 bytes of world update to client 2
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 2
+	x = 60.489628n	y = 63.541889n	theta = 0.299286
+
+[TCPWork]  Bytes received : 8 bytes.
+
+
+[TCPWork]  Bytes received : 4 bytes.
+
+
+[TCPWork]  Quit packet with :
+	id = 2
+
+
+[TCPWork]  sent 12 bytes of quit of client 2 to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[UDPSenderThread]  start my loop
+
+[UDPSenderThread]  info: 1, 64.000000, 64.000000, 0.000000	0.000000, 0.000000
+
+[UDPSenderThread]  end my loop
+
+[UDPSenderThread]  serialized packet wup of 56 bytes
+
+[UDPSenderThread]  sent 56 bytes of world update to client 1
+
+[UDPReceiverThread]  received 40 bytes
+
+[UDPReceiverThread]  packet received:
+	type = 7
+	size = 40
+	id = 1
+	x = 64.000000n	y = 64.000000n	theta = 0.000000
+
+[TCPWork]  Bytes received : 8 bytes.
+
+
+[TCPWork]  Bytes received : 4 bytes.
+
+
+[TCPWork]  Quit packet with :
+	id = 1
+
+
+[cleanup]  Joining UDP receiver thread
+
+[cleanup]  successful join on threads
+
+[cleanup]  TCP server desc closed
+
+[cleanup]  UDP server desc closed
+
+[cleanup]  Images free'd
+
+[cleanup]  World Server destroyed
+
+[cleanup]  all resources were free'd successfully
+
+[main]  See you

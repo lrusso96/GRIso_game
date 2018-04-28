@@ -59,6 +59,8 @@ int Vehicle_update(Vehicle* v, float dt){
 
 
 void Vehicle_init(Vehicle* v, World* w, int id, Image* texture){
+  int ret = pthread_mutex_init(&(v->mutex), NULL);
+  if (ret == -1) logger_error(__func__, "Can't init mutex of vechicle");
   v->world= w;
   v->id=id;
   v->texture=texture;
@@ -95,6 +97,8 @@ void Vehicle_reset(Vehicle* v){
 
 
 void Vehicle_destroy(Vehicle* v){
+  int ret = pthread_mutex_destroy(&(v->mutex));
+  if (ret == -1) logger_error(__func__, "Cannot destroy mutex of vehicle");
   if (v->_destructor) 
     (*v->_destructor)(v);
 }

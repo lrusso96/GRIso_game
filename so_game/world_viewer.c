@@ -102,12 +102,12 @@ void reshape(int width, int height) {
 
 void idle(void) {
   World_update(viewer.world);
-  usleep(10000);
+  usleep(30000);
   glutPostRedisplay();
 
   // decay the commands
-  viewer.self->translational_force_update *= 0.999;
-  viewer.self->rotational_force_update *= 0.7;
+  //viewer.self->translational_force_update *= 0.999;
+  //viewer.self->rotational_force_update *= 0.7;
 }
 
 void Surface_destructor(Surface* s){

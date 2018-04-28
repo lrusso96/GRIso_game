@@ -2,6 +2,8 @@
 #include "surface.h"
 #include "image.h"
 #include "linked_list.h"
+#include <pthread.h>
+#include "logger.h"
 
 
 struct World;
@@ -13,6 +15,7 @@ typedef struct Vehicle {
   int id;
   struct World* world;
   Image* texture;
+  pthread_mutex_t mutex;
 
   // these are the forces that will be applied after the update
   float translational_force_update;

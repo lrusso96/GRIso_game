@@ -574,7 +574,7 @@ void* UDPSenderThread(void* args){
     wup->header = ph;
 
     while(is_up){
-        usleep(500*1000);
+        usleep(300*1000);
 
         if(ws->clients.size==0){
             continue;
@@ -583,7 +583,7 @@ void* UDPSenderThread(void* args){
 
         pthread_mutex_lock(&(ws->mutex));
 
-        World_update(ws->w);
+       // World_update(ws->w);
 
         //set num_vehicles (world size can't change now!)
         wup->num_vehicles = ws->clients.size;
@@ -602,7 +602,7 @@ void* UDPSenderThread(void* args){
             ClientUpdate* cu = &(wup->updates[i++]);
             cu->id = ci->id;
             WorldServer_getClientInfo(ws, cu->id, &(cu->x), &(cu->y), &(cu->theta), &(cu->rotational_force), &(cu->translational_force));
-            logger_verbose(__func__,"info: %d, %f, %f, %f", cu->id, cu->x, cu->y, cu->theta);
+            logger_verbose(__func__,"info: %d, %f, %f, %f\t%f, %f", cu->id, cu->x, cu->y, cu->theta, cu->rotational_force, cu->translational_force);
         }
 
         logger_verbose(__func__,"end my loop");

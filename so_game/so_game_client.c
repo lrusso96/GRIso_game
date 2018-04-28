@@ -432,8 +432,8 @@ void* UDPSenderThread(void* args){
         WorldExtended_vehicleUpdatePacket_init(we, vpckt, vehicle);
 
         int size = Packet_serialize(buf_send,&(vpckt->header));
-        logger_verbose(__func__, "Sending updating packet of %d bytes\n\tid = %d\n\tx = %fn\ty = %fn\ttheta = %f",size,
-        vpckt->id, vpckt->x, vpckt->y, vpckt->theta);
+        logger_verbose(__func__, "Sending updating packet of %d bytes\n\tid = %d\n\tx = %fn\ty = %fn\ttheta = %fn\trf = %fn\ttf = %f",size,
+        vpckt->id, vpckt->x, vpckt->y, vpckt->theta, vpckt->rotational_force, vpckt->translational_force);
 
         int sent = sendto(socket_udp, buf_send, size, 0, (struct sockaddr *) &udp_server, sizeof(udp_server));
         if(sent<0)
@@ -448,14 +448,13 @@ void* UDPSenderThread(void* args){
 
 
 void applyUpdates(WorldUpdatePacket* wup){
-    //fillme
 
     logger_verbose(__func__, "vehicles = %d", wup->num_vehicles);
 
     for(int i= 0; i<wup->num_vehicles; i++){
         ClientUpdate cu = wup->updates[i];
 
-        logger_verbose(__func__, "vehicle %d with %f, %f, %f", cu.id, cu.x, cu.y, cu.theta);
+        logger_verbose(__func__, "vehicle %d with %f, %f, %f\t%f, %f", cu.id, cu.x, cu.y, cu.theta, cu.rotational_force, cu.translational_force);
 
         int id = cu.id;
         //skip my id !
@@ -495,9 +494,9 @@ void applyUpdates(WorldUpdatePacket* wup){
         //update its position
         WorldExtended_setVehicleXYTPlus(we, id, x, y, theta, rf, tf);
 
-        World_update(we->w);
-
     }
+
+	World_update(we->w);
 
     //free packet
     Packet_free(&(wup->header));
