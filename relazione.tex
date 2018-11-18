@@ -1,0 +1,59 @@
+\documentclass[12pt]{article}
+
+%apertura file
+\title{GRIso\_game}
+\author{Luigi Russo, Matteo Salvino}
+
+\begin{document}
+\maketitle
+Progetto per il corso di Sistemi Operativi - La Sapienza - Roma
+\newpage
+
+\begin{section}{What}
+Abbiamo lavorato all'implementazione di un videogioco distribuito multiplayer, partendo dalla proposta di progetto \textbf{Videogame} che gi\'{a} includeva la gestione grafica del videogioco.
+\end{section}
+
+
+\begin{section}{How}
+Il videogioco sfrutta l'architettura client-server e due protocolli di comunicazione a livello di trasporto: TCP e UDP.
+
+\begin{subsection}{Server}
+Il server \'{e} responsabile del corretto funzionamento del gioco: tiene traccia di tutti i clients (utenti) connessi, assegna loro un identificativo globale univoco, aggiorna le coordinate (x, y, theta) di ciascun veicolo e gestisce l'eventuale disconnessione da parte di un client. Il server mantiene tutte le informazioni relative ai clients connessi in una struttura ad hoc WorldServer.
+\end{subsection} 
+\begin{subsubsection}{Multithread}
+Il server accetta connessioni multiple, in particolare \'{e} un server multithread in quanto a ciascuna connessione viene associato un thread che si occupa dello scambio di pacchetti con il protocollo TCP.
+\newline\newline
+A ciascun client \'{e} assegnato un identificativo globale. Per garantire l'unicit\'{a} degli identificativi abbiamo sfruttato un semaforo nella struttura di dati RandomId.
+\end{subsubsection}
+\begin{subsubsection}{Gli aggiornamenti di stato}
+Il server riceve continuamente informazioni sulla posizione e sulle forze di ciascun veicolo e ogni 500 ms integra queste informazioni creando un pacchetto con lo stato del "mondo" e lo inoltra agli utenti connessi. Questo scambio di pacchetti avviene utilizzando il protocollo UDP, quindi alcuni pacchetti potrebbero non essere consegnati.
+\newline\newline
+Per evitare conflitti e race conditions abbiamo aggiunto un mutex a questa struttura: quando il server vuole creare il pacchetto di stato deve prima acquisire il lock sulla struttura. Eventuali aggiornamenti ricevuti in quegli istanti verranno applicati successivamente.
+\end{subsubsection}
+\begin{subsubsection}{Client offline}
+La disconnessione di un client viene notificata a tutti gli altri utenti tramite apposito pacchetto, sfruttando il protocollo TCP, che a differenza di UDP garantisce maggiore affidabilit\'{a}.
+\end{subsubsection}
+
+
+\begin{subsection}{Client}
+Il client si connette a un indirizzo e una porta noti, richiede un identificativo al server, manda la texture del proprio veicolo (visibile a tutti gli altri giocatori) e riceve dal server le immagini della mappa e di tutti i veicoli connessi.
+\begin{subsubsection}{Aggiornamenti}
+Ogni 300 ms il client manda  un pacchetto UDP contenente la sua posizione (coordinate x, y e theta). Un thread ad hoc attende il pacchetto di aggiornamento di stato da parte del server e ne applica il contenuto al "mondo" locale del client.
+\end{subsubsection}
+\begin{subsubsection}{Disconnessione}
+Quando un utente preme il tasto ESC viene inviato un pacchetto di disconnessione al server e a quel punto il gioco termina, avendo cura di liberare tutte le risorse allocate e terminare i threads in esecuzione.
+\end{subsubsection}
+\end{subsection}
+\end{section}
+
+\begin{section}{How to run}
+Prima di tutto bisogna compilare i file, tramite comando \textbf{make}.
+\newline\newline
+Per lanciare il server \'{e} sufficiente eseguire da shell lo script \textbf{server.sh}.
+\newline
+Per il client si pu\'{o} eseguire lo script \textbf{client.sh}.
+\newline\newline
+Per interrompere il gioco \'{e} sufficiente premere il tasto \textbf{ESC}.
+\end{section}
+
+\end{document}
